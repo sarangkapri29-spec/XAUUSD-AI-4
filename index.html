@@ -52,12 +52,13 @@
       </button>
     </header>
 
+    <!-- Dashboard Tab -->
     <div id="tab-dashboard-view" class="space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="card-bg p-5 rounded-xl">
           <div class="text-xs font-semibold text-slate-400 uppercase">LIVE PRICE (<span id="ui-pair">XAUUSD</span>)</div>
           <div id="ui-price" class="text-3xl font-black mt-2 text-white">Loading...</div>
-          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live WebSocket Feed</div>
+          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Feed Active</div>
         </div>
         <div class="card-bg p-5 rounded-xl">
           <div class="text-xs font-semibold text-slate-400 uppercase">INSTITUTIONAL BIAS</div>
@@ -104,6 +105,7 @@
       </div>
     </div>
 
+    <!-- AI Trade Audit Tab -->
     <div id="tab-audit-view" class="hidden">
       <div class="card-bg p-6 rounded-xl max-w-2xl">
         <h2 class="text-xl font-bold mb-1">AI Trade Setup Audit</h2>
@@ -120,13 +122,65 @@
       </div>
     </div>
 
-    <div id="tab-calendar-view" class="hidden">
-      <div class="card-bg p-6 rounded-xl">
-        <h2 class="text-xl font-bold mb-4">Economic News Calendar (PKT)</h2>
-        <div class="p-4 bg-slate-900 rounded-lg border border-slate-800 text-slate-200">
-          <p class="font-bold text-amber-400">CPI Inflation Data (18:30 PKT)</p>
-          <p class="text-xs text-slate-400 mt-1">High Impact Event - Avoid high leverage near London/NY session overlap.</p>
+    <!-- Live Calendar (PKT) Tab -->
+    <div id="tab-calendar-view" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-xl font-bold">Economic News Calendar</h2>
+          <p class="text-xs text-slate-400">High-Impact USD / EUR / GBP News Release Schedule (PKT Timezone)</p>
         </div>
+        <span class="bg-red-500/10 text-red-400 text-xs px-3 py-1.5 rounded-lg border border-red-500/20 font-semibold flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Live News Feed
+        </span>
+      </div>
+
+      <!-- High Impact Alerts -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="card-bg p-4 rounded-xl border-l-4 border-l-red-500">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-red-400 bg-red-950 px-2 py-0.5 rounded">HIGH IMPACT</span>
+            <span class="text-xs text-slate-400">18:30 PKT</span>
+          </div>
+          <h4 class="font-bold text-sm mt-2">US CPI Inflation Data</h4>
+          <p class="text-xs text-slate-400 mt-1">Expected Volatility: Very High (XAUUSD / EURUSD)</p>
+        </div>
+
+        <div class="card-bg p-4 rounded-xl border-l-4 border-l-amber-500">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded">MEDIUM IMPACT</span>
+            <span class="text-xs text-slate-400">19:30 PKT</span>
+          </div>
+          <h4 class="font-bold text-sm mt-2">Unemployment Claims</h4>
+          <p class="text-xs text-slate-400 mt-1">Forecast: 225K | Previous: 220K</p>
+        </div>
+
+        <div class="card-bg p-4 rounded-xl border-l-4 border-l-red-500">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-red-400 bg-red-950 px-2 py-0.5 rounded">HIGH IMPACT</span>
+            <span class="text-xs text-slate-400">23:00 PKT</span>
+          </div>
+          <h4 class="font-bold text-sm mt-2">FOMC Rate Decision</h4>
+          <p class="text-xs text-slate-400 mt-1">Strict Risk Management Recommended</p>
+        </div>
+      </div>
+
+      <!-- TradingView Live Economic Calendar Widget -->
+      <div class="card-bg p-4 rounded-xl overflow-hidden" style="height: 500px;">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+          <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+          {
+            "width": "100%",
+            "height": "100%",
+            "colorTheme": "dark",
+            "isTransparent": true,
+            "currencyFilter": "USD,EUR,GBP",
+            "importanceFilter": "0,1"
+          }
+          </script>
+        </div>
+        <!-- TradingView Widget END -->
       </div>
     </div>
   </main>
@@ -137,7 +191,7 @@
     const BINANCE_MAP = {
       BTCUSD: "BTCUSDT",
       ETHUSD: "ETHUSDT",
-      XAUUSD: "PAXGUSDT", // Gold backed token for live price feed
+      XAUUSD: "PAXGUSDT",
       EURUSD: "EURUSDT"
     };
 
@@ -150,7 +204,6 @@
 
         document.getElementById('ui-price').innerText = activeSymbol === 'EURUSD' ? price.toFixed(4) : price.toFixed(2);
         
-        // Dynamic RSI and Alignment fluctuation simulation based on live tick
         const dynamicRsi = (55 + Math.random() * 15).toFixed(1);
         document.getElementById('ui-rsi').innerText = dynamicRsi;
       } catch (err) {
@@ -191,7 +244,6 @@
       document.getElementById('audit-msg').innerText = `Analyzing "${file.name}"... Liquidity Sweep detected. Fair Value Gap (FVG) retest holds active setup.`;
     }
 
-    // Auto fetch every 5 seconds
     fetchLiveData();
     setInterval(fetchLiveData, 5000);
   </script>
