@@ -54,8 +54,8 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="card-bg p-5 rounded-xl">
           <div class="text-xs font-semibold text-slate-400 uppercase">LIVE PRICE (<span id="ui-pair">XAUUSD</span>)</div>
-          <div id="ui-price" class="text-3xl font-black mt-2 text-white">Loading...</div>
-          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active Stream</div>
+          <div id="ui-price" class="text-3xl font-black mt-2 text-white">Fetching...</div>
+          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Binance Stream</div>
         </div>
         <div class="card-bg p-5 rounded-xl">
           <div class="text-xs font-semibold text-slate-400 uppercase">INSTITUTIONAL BIAS</div>
@@ -69,8 +69,8 @@
         </div>
         <div class="card-bg p-5 rounded-xl">
           <div class="text-xs font-semibold text-slate-400 uppercase">LIVE FF SYNC</div>
-          <div id="ui-sync-status" class="text-2xl font-black mt-2 text-emerald-400">ONLINE</div>
-          <div class="text-xs text-slate-400 mt-1">Auto-Refreshing API</div>
+          <div id="ui-sync-status" class="text-2xl font-black mt-2 text-amber-400">CONNECTING</div>
+          <div class="text-xs text-slate-400 mt-1">Multi-Proxy Auto-Sync</div>
         </div>
       </div>
     </div>
@@ -105,28 +105,54 @@
     let currentFilter = "ALL";
     let rawNewsEvents = [];
 
-    // Forex Factory Proxy Endpoint for Live Network Feeds
-    const FF_LIVE_FEED_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://nvc.forexfactory.com/calendar.json");
+    // Live Price Streaming (Binance Public API)
+    async function fetchLivePrice() {
+      try {
+        let sym = activeSymbol === "XAUUSD" ? "PAXGUSDT" : (activeSymbol === "EURUSD" ? "EURUSDT" : "BTCUSDT");
+        const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${sym}`);
+        const data = await res.json();
+        document.getElementById('ui-price').innerText = "$" + parseFloat(data.price).toFixed(2);
+      } catch(e) {
+        document.getElementById('ui-price').innerText = "Unavailable";
+      }
+    }
+    setInterval(fetchLivePrice, 4000);
+    fetchLivePrice();
+
+    // Multi-Proxy Fallback System to bypass CORS Blocks
+    const PROXIES = [
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://thingproxy.freeboard.io/fetch/${url}`
+    ];
+
+    async function fetchWithProxy(targetUrl) {
+      for (let proxy of PROXIES) {
+        try {
+          const res = await fetch(proxy(targetUrl));
+          if (res.ok) return await res.json();
+        } catch (e) {
+          continue;
+        }
+      }
+      throw new Error("All Proxies Failed");
+    }
 
     async function fetchLiveFFData() {
       const container = document.getElementById('calendar-container');
       container.innerHTML = `
         <div class="card-bg p-8 text-center text-slate-400">
           <i class="fa-solid fa-spinner animate-spin text-2xl text-blue-500 mb-2"></i>
-          <p class="text-sm font-semibold">Pulling Real-Time Forex Factory Releases...</p>
+          <p class="text-sm font-semibold">Bypassing Restrictions & Streaming Forex Factory Feeds...</p>
         </div>
       `;
 
       try {
-        const response = await fetch(FF_LIVE_FEED_URL);
-        if(!response.ok) throw new Error("Feed Error");
-        const data = await response.json();
+        const data = await fetchWithProxy("https://nvc.forexfactory.com/calendar.json");
 
         rawNewsEvents = data.map(item => {
           const pktDate = new Date(item.date);
-          
-          // AI Gold Analysis Engine Logic
-          const title = item.title.toLowerCase();
+          const title = (item.title || "").toLowerCase();
           const impact = (item.impact || 'Low').toUpperCase();
           const cur = item.country || 'USD';
 
@@ -166,10 +192,12 @@
         });
 
         document.getElementById('ui-sync-status').innerText = "ONLINE";
+        document.getElementById('ui-sync-status').className = "text-2xl font-black mt-2 text-emerald-400";
         renderCalendarTable();
       } catch (e) {
         document.getElementById('ui-sync-status').innerText = "OFFLINE";
-        container.innerHTML = `<div class="card-bg p-6 text-center text-red-400">Failed to stream Forex Factory feed. Retrying...</div>`;
+        document.getElementById('ui-sync-status').className = "text-2xl font-black mt-2 text-red-500";
+        container.innerHTML = `<div class="card-bg p-6 text-center text-red-400">Failed to stream Forex Factory feed due to CORS restriction. Click Sync again to retry.</div>`;
       }
     }
 
@@ -259,6 +287,7 @@
     function selectPair(symbol) {
       activeSymbol = symbol;
       document.getElementById('ui-pair').innerText = symbol;
+      fetchLivePrice();
     }
 
     function switchTab(tab) {
@@ -273,7 +302,6 @@
       }
     }
 
-    // Auto-fetch Live Feed on Page Load
     fetchLiveFFData();
   </script>
 </body>
