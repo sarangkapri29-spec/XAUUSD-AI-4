@@ -122,51 +122,77 @@
       </div>
     </div>
 
-    <!-- Live Calendar (PKT) Tab -->
+    <!-- Live Calendar & AI Impact Analysis Tab -->
     <div id="tab-calendar-view" class="hidden space-y-6">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-xl font-bold">Economic News Calendar</h2>
-          <p class="text-xs text-slate-400">High-Impact USD / EUR / GBP News Release Schedule (PKT Timezone)</p>
+          <h2 class="text-xl font-bold">Economic Calendar & AI News Predictions</h2>
+          <p class="text-xs text-slate-400">High-Impact News Direction & Probability Analysis (PKT Timezone)</p>
         </div>
         <span class="bg-red-500/10 text-red-400 text-xs px-3 py-1.5 rounded-lg border border-red-500/20 font-semibold flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Live News Feed
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> AI Forecast Live
         </span>
       </div>
 
-      <!-- High Impact Alerts -->
+      <!-- High Impact AI Direction Forecast Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="card-bg p-4 rounded-xl border-l-4 border-l-red-500">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-bold text-red-400 bg-red-950 px-2 py-0.5 rounded">HIGH IMPACT</span>
-            <span class="text-xs text-slate-400">18:30 PKT</span>
+        <!-- Event 1 -->
+        <div class="card-bg p-4 rounded-xl border-l-4 border-l-emerald-500 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start">
+              <span class="text-[10px] font-bold text-red-400 bg-red-950/80 border border-red-800 px-2 py-0.5 rounded">HIGH IMPACT</span>
+              <span class="text-xs font-mono text-slate-400">18:30 PKT</span>
+            </div>
+            <h4 class="font-bold text-sm mt-2">US CPI Inflation Data</h4>
+            <div class="mt-3 bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span class="text-slate-400">XAUUSD AI Impact:</span>
+                <span class="text-emerald-400"><i class="fa-solid fa-arrow-trend-up"></i> BULLISH (78%)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 leading-tight">If CPI < Forecast: DXY drops, **Gold surges UP** towards Liquidity Pool.</p>
+            </div>
           </div>
-          <h4 class="font-bold text-sm mt-2">US CPI Inflation Data</h4>
-          <p class="text-xs text-slate-400 mt-1">Expected Volatility: Very High (XAUUSD / EURUSD)</p>
         </div>
 
-        <div class="card-bg p-4 rounded-xl border-l-4 border-l-amber-500">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded">MEDIUM IMPACT</span>
-            <span class="text-xs text-slate-400">19:30 PKT</span>
+        <!-- Event 2 -->
+        <div class="card-bg p-4 rounded-xl border-l-4 border-l-amber-500 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start">
+              <span class="text-[10px] font-bold text-amber-400 bg-amber-950/80 border border-amber-800 px-2 py-0.5 rounded">MEDIUM IMPACT</span>
+              <span class="text-xs font-mono text-slate-400">19:30 PKT</span>
+            </div>
+            <h4 class="font-bold text-sm mt-2">Unemployment Claims</h4>
+            <div class="mt-3 bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span class="text-slate-400">XAUUSD AI Impact:</span>
+                <span class="text-amber-400"><i class="fa-solid fa-arrows-up-down"></i> RANGE (62%)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 leading-tight">If Claims > 225K: Short Gold spike, then FVG retest.</p>
+            </div>
           </div>
-          <h4 class="font-bold text-sm mt-2">Unemployment Claims</h4>
-          <p class="text-xs text-slate-400 mt-1">Forecast: 225K | Previous: 220K</p>
         </div>
 
-        <div class="card-bg p-4 rounded-xl border-l-4 border-l-red-500">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-bold text-red-400 bg-red-950 px-2 py-0.5 rounded">HIGH IMPACT</span>
-            <span class="text-xs text-slate-400">23:00 PKT</span>
+        <!-- Event 3 -->
+        <div class="card-bg p-4 rounded-xl border-l-4 border-l-rose-500 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start">
+              <span class="text-[10px] font-bold text-red-400 bg-red-950/80 border border-red-800 px-2 py-0.5 rounded">HIGH IMPACT</span>
+              <span class="text-xs font-mono text-slate-400">23:00 PKT</span>
+            </div>
+            <h4 class="font-bold text-sm mt-2">FOMC Rate Decision</h4>
+            <div class="mt-3 bg-slate-900/90 p-2.5 rounded-lg border border-slate-800 space-y-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span class="text-slate-400">XAUUSD AI Impact:</span>
+                <span class="text-rose-400"><i class="fa-solid fa-arrow-trend-down"></i> BEARISH SWEEP (71%)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 leading-tight">Hawkish tone: DXY rallies, **Gold moves DOWN** to grab Asia Lows.</p>
+            </div>
           </div>
-          <h4 class="font-bold text-sm mt-2">FOMC Rate Decision</h4>
-          <p class="text-xs text-slate-400 mt-1">Strict Risk Management Recommended</p>
         </div>
       </div>
 
       <!-- TradingView Live Economic Calendar Widget -->
-      <div class="card-bg p-4 rounded-xl overflow-hidden" style="height: 500px;">
-        <!-- TradingView Widget BEGIN -->
+      <div class="card-bg p-4 rounded-xl overflow-hidden" style="height: 480px;">
         <div class="tradingview-widget-container" style="height:100%;width:100%">
           <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
@@ -180,7 +206,6 @@
           }
           </script>
         </div>
-        <!-- TradingView Widget END -->
       </div>
     </div>
   </main>
