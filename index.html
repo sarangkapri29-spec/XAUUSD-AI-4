@@ -122,43 +122,36 @@
       </div>
     </div>
 
-    <!-- TradeFXBook Style Economic Calendar Tab -->
+    <!-- Exact TradeFXBook Style Economic Calendar Tab -->
     <div id="tab-calendar-view" class="hidden space-y-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
         <div>
-          <h2 class="text-xl font-bold">Economic News Calendar</h2>
-          <p class="text-xs text-slate-400">TradeFXBook Model - Real-time Releases & AI Deviation Analysis (PKT)</p>
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-globe text-blue-500"></i> TradeFXBook Economic Calendar
+          </h2>
+          <p class="text-xs text-slate-400">Live Global News Releases, Economic Forecasts & Institutional AI Predictions (PKT)</p>
         </div>
-        
-        <!-- Impact Filters -->
-        <div class="flex items-center bg-slate-900 p-1 rounded-lg border border-slate-800 gap-1 text-xs">
-          <button id="flt-all" class="px-3 py-1.5 rounded font-bold bg-blue-600 text-white" onclick="filterCalendar('ALL')">All Events</button>
-          <button id="flt-high" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="filterCalendar('HIGH')">🔴 High Impact</button>
-          <button id="flt-med" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="filterCalendar('MEDIUM')">🟠 Medium Impact</button>
+
+        <!-- Date Quick Range Filters -->
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <div class="bg-slate-950 p-1 rounded-lg border border-slate-800 flex gap-1">
+            <button id="range-today" class="px-3 py-1.5 rounded font-bold bg-blue-600 text-white" onclick="setDateRange('TODAY')">Today</button>
+            <button id="range-tomorrow" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="setDateRange('TOMORROW')">Tomorrow</button>
+            <button id="range-week" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="setDateRange('WEEK')">This Week</button>
+          </div>
+
+          <!-- Impact Toggles -->
+          <div class="bg-slate-950 p-1 rounded-lg border border-slate-800 flex gap-1">
+            <button id="flt-all" class="px-3 py-1.5 rounded font-bold bg-slate-800 text-white" onclick="filterCalendar('ALL')">All</button>
+            <button id="flt-high" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="filterCalendar('HIGH')">🔴 High</button>
+            <button id="flt-med" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="filterCalendar('MEDIUM')">🟠 Med</button>
+          </div>
         </div>
       </div>
 
-      <!-- TradeFXBook Table Layout -->
-      <div class="card-bg rounded-xl overflow-hidden border border-slate-800">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-900 text-slate-400 text-xs uppercase border-b border-slate-800">
-              <tr>
-                <th class="p-3.5">Time (PKT)</th>
-                <th class="p-3.5">Cur.</th>
-                <th class="p-3.5">Impact</th>
-                <th class="p-3.5">Event Title</th>
-                <th class="p-3.5 text-center">Actual</th>
-                <th class="p-3.5 text-center">Forecast</th>
-                <th class="p-3.5 text-center">Previous</th>
-                <th class="p-3.5 text-right">AI Analysis / Target</th>
-              </tr>
-            </thead>
-            <tbody id="calendar-table-body" class="divide-y divide-slate-800/60 font-mono text-xs">
-              <!-- Rendered via JavaScript -->
-            </tbody>
-          </table>
-        </div>
+      <!-- TradeFXBook Full Schedule View -->
+      <div id="calendar-container" class="space-y-6">
+        <!-- Rendered dynamically by JS -->
       </div>
     </div>
   </main>
@@ -166,6 +159,7 @@
   <script>
     let activeSymbol = "XAUUSD";
     let currentFilter = "ALL";
+    let currentRange = "WEEK";
 
     const BINANCE_MAP = {
       BTCUSD: "BTCUSDT",
@@ -174,43 +168,118 @@
       EURUSD: "EURUSDT"
     };
 
-    // TradeFXBook Style Data Feed
-    const CALENDAR_DATA = [
-      { time: "05:30", cur: "USD", impact: "MEDIUM", name: "Building Permits", actual: "1.44M", forecast: "1.37M", previous: "1.36M", usdBull: true },
-      { time: "17:30", cur: "USD", impact: "HIGH", name: "Core CPI (MoM)", actual: "Pending", forecast: "0.2%", previous: "0.1%", usdBull: false },
-      { time: "18:30", cur: "USD", impact: "HIGH", name: "Retail Sales (MoM)", actual: "Pending", forecast: "0.1%", previous: "-0.6%", usdBull: true },
-      { time: "19:30", cur: "USD", impact: "MEDIUM", name: "Unemployment Claims", actual: "Pending", forecast: "225K", previous: "220K", usdBull: false },
-      { time: "23:00", cur: "GBP", impact: "HIGH", name: "Core CPI (YoY)", actual: "Pending", forecast: "2.5%", previous: "2.6%", usdBull: false }
+    // Complete TradeFXBook Event Engine Data
+    const CALENDAR_SCHEDULE = [
+      {
+        id: "TODAY",
+        date: "Wednesday, Aug 19, 2026",
+        isToday: true,
+        events: [
+          { time: "05:30", cur: "USD", impact: "MEDIUM", name: "Building Permits", actual: "1.44M", forecast: "1.37M", previous: "1.36M", usdBull: true },
+          { time: "17:30", cur: "USD", impact: "HIGH", name: "Core CPI (MoM)", actual: "Pending", forecast: "0.2%", previous: "0.1%", usdBull: false },
+          { time: "18:30", cur: "USD", impact: "HIGH", name: "Retail Sales (MoM)", actual: "Pending", forecast: "0.1%", previous: "-0.6%", usdBull: true },
+          { time: "23:00", cur: "GBP", impact: "HIGH", name: "Core CPI (YoY)", actual: "Pending", forecast: "2.5%", previous: "2.6%", usdBull: false }
+        ]
+      },
+      {
+        id: "TOMORROW",
+        date: "Thursday, Aug 20, 2026",
+        isToday: false,
+        events: [
+          { time: "17:30", cur: "USD", impact: "HIGH", name: "Initial Jobless Claims", actual: "Pending", forecast: "225K", previous: "220K", usdBull: false },
+          { time: "17:30", cur: "USD", impact: "MEDIUM", name: "Philadelphia Fed Manufacturing Index", actual: "Pending", forecast: "7.0", previous: "13.9", usdBull: false },
+          { time: "19:00", cur: "USD", impact: "HIGH", name: "Existing Home Sales", actual: "Pending", forecast: "3.95M", previous: "3.89M", usdBull: true }
+        ]
+      },
+      {
+        id: "WEEK",
+        date: "Friday, Aug 21, 2026",
+        isToday: false,
+        events: [
+          { time: "18:45", cur: "USD", impact: "HIGH", name: "S&P Global US Manufacturing PMI", actual: "Pending", forecast: "49.8", previous: "49.6", usdBull: true },
+          { time: "18:45", cur: "USD", impact: "HIGH", name: "S&P Global US Services PMI", actual: "Pending", forecast: "55.2", previous: "55.0", usdBull: true },
+          { time: "21:00", cur: "USD", impact: "HIGH", name: "Powell Speech at Jackson Hole", actual: "Pending", forecast: "N/A", previous: "N/A", usdBull: false }
+        ]
+      }
     ];
 
     function renderCalendarTable() {
-      const tbody = document.getElementById('calendar-table-body');
-      tbody.innerHTML = '';
+      const container = document.getElementById('calendar-container');
+      container.innerHTML = '';
 
-      CALENDAR_DATA.forEach(ev => {
-        if (currentFilter !== "ALL" && ev.impact !== currentFilter) return;
+      CALENDAR_SCHEDULE.forEach(day => {
+        if (currentRange === 'TODAY' && day.id !== 'TODAY') return;
+        if (currentRange === 'TOMORROW' && day.id !== 'TOMORROW') return;
 
-        const impactBadge = ev.impact === 'HIGH' 
-          ? `<span class="bg-red-950/80 text-red-400 border border-red-800/80 px-2 py-0.5 rounded text-[10px] font-bold">HIGH</span>` 
-          : `<span class="bg-amber-950/80 text-amber-400 border border-amber-800/80 px-2 py-0.5 rounded text-[10px] font-bold">MED</span>`;
+        const filteredEvents = day.events.filter(ev => currentFilter === "ALL" || ev.impact === currentFilter);
+        if (filteredEvents.length === 0) return;
 
-        const goldBias = ev.usdBull 
-          ? `<span class="text-rose-400 font-bold"><i class="fa-solid fa-arrow-trend-down"></i> Bearish Gold</span>` 
-          : `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-arrow-trend-up"></i> Bullish Gold</span>`;
+        const dateTag = day.isToday 
+          ? `<span class="bg-blue-600/30 text-blue-400 border border-blue-500/40 text-[11px] font-bold px-2.5 py-0.5 rounded ml-2">TODAY</span>`
+          : '';
 
-        tbody.innerHTML += `
-          <tr class="hover:bg-slate-800/30 transition">
-            <td class="p-3.5 text-slate-300 font-bold">${ev.time}</td>
-            <td class="p-3.5"><span class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded font-bold">${ev.cur}</span></td>
-            <td class="p-3.5">${impactBadge}</td>
-            <td class="p-3.5 font-sans font-semibold text-slate-200">${ev.name}</td>
-            <td class="p-3.5 text-center font-bold ${ev.actual === 'Pending' ? 'text-amber-400' : 'text-emerald-400'}">${ev.actual}</td>
-            <td class="p-3.5 text-center text-slate-300">${ev.forecast}</td>
-            <td class="p-3.5 text-center text-slate-400">${ev.previous}</td>
-            <td class="p-3.5 text-right font-sans text-xs">${goldBias}</td>
-          </tr>
+        let tableRows = '';
+        filteredEvents.forEach(ev => {
+          const impactBadge = ev.impact === 'HIGH' 
+            ? `<span class="bg-red-950/80 text-red-400 border border-red-800/80 px-2 py-0.5 rounded text-[10px] font-bold">HIGH</span>` 
+            : `<span class="bg-amber-950/80 text-amber-400 border border-amber-800/80 px-2 py-0.5 rounded text-[10px] font-bold">MED</span>`;
+
+          const goldBias = ev.usdBull 
+            ? `<span class="text-rose-400 font-bold"><i class="fa-solid fa-arrow-trend-down"></i> Bearish Gold</span>` 
+            : `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-arrow-trend-up"></i> Bullish Gold</span>`;
+
+          tableRows += `
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="p-3.5 text-slate-300 font-bold">${ev.time}</td>
+              <td class="p-3.5"><span class="bg-slate-800 text-slate-200 px-2 py-0.5 rounded font-bold">${ev.cur}</span></td>
+              <td class="p-3.5">${impactBadge}</td>
+              <td class="p-3.5 font-sans font-semibold text-slate-200">${ev.name}</td>
+              <td class="p-3.5 text-center font-bold ${ev.actual === 'Pending' ? 'text-amber-400 animate-pulse' : 'text-emerald-400'}">${ev.actual}</td>
+              <td class="p-3.5 text-center text-slate-300">${ev.forecast}</td>
+              <td class="p-3.5 text-center text-slate-400">${ev.previous}</td>
+              <td class="p-3.5 text-right font-sans text-xs">${goldBias}</td>
+            </tr>
+          `;
+        });
+
+        container.innerHTML += `
+          <div class="card-bg rounded-xl overflow-hidden border border-slate-800 shadow-lg">
+            <div class="bg-slate-900/90 px-4 py-3 border-b border-slate-800 flex items-center font-bold text-slate-200 text-sm">
+              <i class="fa-regular fa-calendar-check text-blue-400 mr-2.5"></i>
+              <span>${day.date}</span>
+              ${dateTag}
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-slate-950/70 text-slate-400 text-[11px] uppercase border-b border-slate-800">
+                  <tr>
+                    <th class="p-3">Time (PKT)</th>
+                    <th class="p-3">Cur.</th>
+                    <th class="p-3">Impact</th>
+                    <th class="p-3">Event Title</th>
+                    <th class="p-3 text-center">Actual</th>
+                    <th class="p-3 text-center">Forecast</th>
+                    <th class="p-3 text-center">Previous</th>
+                    <th class="p-3 text-right">AI Analysis / Target</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-mono text-xs">
+                  ${tableRows}
+                </tbody>
+              </table>
+            </div>
+          </div>
         `;
       });
+    }
+
+    function setDateRange(range) {
+      currentRange = range;
+      ['today', 'tomorrow', 'week'].forEach(r => {
+        document.getElementById(`range-${r}`).className = "px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white";
+      });
+      document.getElementById(`range-${range.toLowerCase()}`).className = "px-3 py-1.5 rounded font-bold bg-blue-600 text-white";
+      renderCalendarTable();
     }
 
     function filterCalendar(type) {
@@ -219,9 +288,9 @@
         document.getElementById(`flt-${f}`).className = "px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white";
       });
 
-      if (type === 'ALL') document.getElementById('flt-all').className = "px-3 py-1.5 rounded font-bold bg-blue-600 text-white";
-      if (type === 'HIGH') document.getElementById('flt-high').className = "px-3 py-1.5 rounded font-bold bg-blue-600 text-white";
-      if (type === 'MEDIUM') document.getElementById('flt-med').className = "px-3 py-1.5 rounded font-bold bg-blue-600 text-white";
+      if (type === 'ALL') document.getElementById('flt-all').className = "px-3 py-1.5 rounded font-bold bg-slate-800 text-white";
+      if (type === 'HIGH') document.getElementById('flt-high').className = "px-3 py-1.5 rounded font-bold bg-slate-800 text-white";
+      if (type === 'MEDIUM') document.getElementById('flt-med').className = "px-3 py-1.5 rounded font-bold bg-slate-800 text-white";
 
       renderCalendarTable();
     }
