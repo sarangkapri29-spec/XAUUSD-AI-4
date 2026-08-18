@@ -2,7 +2,7 @@ let activeSymbol = "XAUUSD";
 
 const NEWS_EVENTS = [
   { date: "Aug 18", time: "18:30 PKT", currency: "USD", impact: "HIGH", event: "CPI Inflation Data", forecast: "3.1%", previous: "3.2%" },
-  { date: "Aug 18", time: "21:00 PKT", currency: "USD", impact: "HIGH", event: "FOMC Meeting Minutes", forecast: "-", previous: "-" },
+  { date: "Aug 18", time: "21:00 PKT", currency: "USD", impact: "HIGH", event: "FOMC Minutes", forecast: "-", previous: "-" },
   { date: "Aug 19", time: "17:30 PKT", currency: "USD", impact: "HIGH", event: "Unemployment Claims", forecast: "230K", previous: "233K" },
   { date: "Aug 20", time: "19:00 PKT", currency: "USD", impact: "MEDIUM", event: "Existing Home Sales", forecast: "3.95M", previous: "3.89M" }
 ];
@@ -29,10 +29,10 @@ async function fetchLivePairData() {
     if (document.getElementById('d1-bar')) document.getElementById('d1-bar').style.width = `${d.d1Val}%`;
 
     if (document.getElementById('h4-val')) document.getElementById('h4-val').innerText = `${d.bias} (${d.h4Val}%)`;
-    if (document.getElementById('h4-bar')) document.getElementById('h4-bar').style.width = `${d.h4Val}%`;
+    if (document.getElementById('h4-bar').style.width = `${d.h4Val}%`;
 
     if (document.getElementById('h1-val')) document.getElementById('h1-val').innerText = `${d.bias} (${d.h1Val}%)`;
-    if (document.getElementById('h1-bar')) document.getElementById('h1-bar').style.width = `${d.h1Val}%`;
+    if (document.getElementById('h1-bar').style.width = `${d.h1Val}%`;
 
     if (document.getElementById('ui-reasoning')) document.getElementById('ui-reasoning').innerText = d.reasoning;
   } catch (err) {
@@ -64,7 +64,7 @@ function switchTab(tab) {
   if (tab === 'dashboard' && dash) dash.classList.remove('hidden');
   if (tab === 'audit' && audit) {
     audit.classList.remove('hidden');
-    setupAuditUI();
+    renderAuditUI();
   }
   if (tab === 'calendar' && cal) {
     cal.classList.remove('hidden');
@@ -109,7 +109,7 @@ function renderCalendar() {
   `;
 }
 
-function setupAuditUI() {
+function renderAuditUI() {
   const auditView = document.getElementById('tab-audit-view');
   if (!auditView) return;
 
@@ -148,12 +148,4 @@ function handleChartUpload(e) {
 document.addEventListener('DOMContentLoaded', () => {
   selectPair('XAUUSD');
   setInterval(fetchLivePairData, 10000);
-
-  // Bind Sidebar Nav Buttons
-  const btns = document.querySelectorAll('aside button');
-  if (btns.length >= 3) {
-    btns[0].onclick = () => switchTab('dashboard');
-    btns[1].onclick = () => switchTab('audit');
-    btns[2].onclick = () => switchTab('calendar');
-  }
 });
