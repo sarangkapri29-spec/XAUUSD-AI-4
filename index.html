@@ -1,195 +1,167 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TradeFX Terminal | Institutional AI Analysis</title>
+  <title>TradeFX Terminal | Institutional AI Analyst</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { background-color: #0B0E14; color: #E2E8F0; font-family: 'Inter', sans-serif; }
-    .glass-card { background: rgba(18, 24, 38, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border-radius: 12px; }
-    .active-pair { background: #3B82F6 !important; color: white !important; font-weight: 600; }
-  </style>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#0b0e14',
+            cardBg: '#131822',
+            borderBg: '#1e2638'
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="min-h-screen flex flex-col md:flex-row">
+<body class="bg-darkBg text-slate-200 font-sans h-screen flex flex-col md:flex-row overflow-hidden">
 
   <!-- Sidebar -->
-  <aside class="w-full md:w-64 bg-[#0F1522] border-r border-slate-800 p-5 flex flex-col justify-between">
+  <aside class="w-full md:w-64 bg-cardBg border-r border-borderBg p-5 flex flex-col justify-between">
     <div>
       <div class="flex items-center gap-3 mb-8">
-        <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-xl">TF</div>
-        <h1 class="text-xl font-bold tracking-wide">TradeFX <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">ELITE</span></h1>
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-darkBg">TF</div>
+        <span class="font-bold text-lg text-white tracking-wide">TradeFX <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">ELITE</span></span>
       </div>
-
       <nav class="space-y-2">
-        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium bg-blue-600/10 text-blue-400 border border-blue-500/30">
-          <i class="fa-solid font-bold fa-chart-line"></i> Dashboard
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <i class="fa-solid fa-chart-line"></i> Dashboard
         </button>
-        <button onclick="switchTab('audit')" id="tab-audit" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium text-slate-400 hover:bg-slate-800/50">
-          <i class="fa-solid fa-microscope"></i> AI Trade Audit
+        <button onclick="switchTab('audit')" id="nav-audit" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-semibold text-slate-400 hover:bg-borderBg transition">
+          <i class="fa-solid fa-camera text-emerald-400"></i> AI Trade Audit
         </button>
-        <button onclick="switchTab('calendar')" id="tab-calendar" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium text-slate-400 hover:bg-slate-800/50">
-          <i class="fa-solid fa-calendar-days"></i> Economic Calendar
+        <button onclick="switchTab('calendar')" id="nav-calendar" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-semibold text-slate-400 hover:bg-borderBg transition">
+          <i class="fa-solid fa-newspaper text-rose-400"></i> Economic Calendar
         </button>
       </nav>
     </div>
-
-    <div class="text-xs text-slate-500 flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Gemini 2.0 Engine Live
+    <div class="text-xs text-slate-500 flex items-center gap-2 pt-4 border-t border-borderBg">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Gemini 2.0 Engine Live
     </div>
   </aside>
 
-  <!-- Main Content -->
-  <main class="flex-1 p-6 overflow-y-auto">
-    
-    <!-- Top Bar / Active Pair Toggle -->
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-slate-800 pb-4">
+  <!-- Main Area -->
+  <main class="flex-1 flex flex-col overflow-y-auto">
+    <header class="bg-cardBg border-b border-borderBg p-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-10">
       <div class="flex items-center gap-2">
         <span class="text-xs text-slate-400 font-semibold uppercase">Active Pair:</span>
         <div class="flex gap-2">
-          <button id="btn-XAUUSD" onclick="changePair('XAUUSD')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 active-pair">XAUUSD</button>
-          <button id="btn-EURUSD" onclick="changePair('EURUSD')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">EURUSD</button>
-          <button id="btn-NASDAQ" onclick="changePair('NASDAQ')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">NASDAQ</button>
-          <button id="btn-US30" onclick="changePair('US30')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">US30</button>
+          <button id="btn-XAUUSD" onclick="selectPair('XAUUSD')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-500 text-white">XAUUSD</button>
+          <button id="btn-EURUSD" onclick="selectPair('EURUSD')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">EURUSD</button>
+          <button id="btn-NASDAQ" onclick="selectPair('NASDAQ')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">NASDAQ</button>
+          <button id="btn-US30" onclick="selectPair('US30')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">US30</button>
         </div>
       </div>
-
       <div class="flex items-center gap-3">
-        <input type="file" id="auditInput" accept="image/*" class="hidden" onchange="processScreenshot(event)">
-        <button onclick="document.getElementById('auditInput').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-semibold border border-slate-700 flex items-center gap-2">
-          <i class="fa-solid fa-camera"></i> Audit Screenshot
+        <input type="file" id="auditInput" accept="image/*" class="hidden" onchange="uploadScreenshot(event)">
+        <button onclick="document.getElementById('auditInput').click()" class="bg-cardBg border border-borderBg text-slate-200 px-4 py-2 rounded-lg text-xs font-bold hover:bg-borderBg transition flex items-center gap-2">
+          <i class="fa-solid fa-camera text-blue-400"></i> Audit Screenshot
         </button>
-        <button onclick="refreshAnalysis()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
-          <i class="fa-solid fa-rotate"></i> Analyze Live
+        <button onclick="fetchLivePairData()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90 transition flex items-center gap-2">
+          <i class="fa-solid fa-arrows-rotate"></i> Analyze Live
         </button>
       </div>
     </header>
 
-    <!-- TAB 1: DASHBOARD -->
-    <section id="view-dashboard" class="space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="glass-card p-4">
-          <p class="text-xs text-slate-400 font-medium">LIVE PRICE (<span id="pair-label">XAUUSD</span>)</p>
-          <p class="text-2xl font-extrabold mt-1 text-white" id="live-price">---.--</p>
-          <p class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-wifi"></i> Real-time Feed</p>
-        </div>
-
-        <div class="glass-card p-4">
-          <p class="text-xs text-slate-400 font-medium">INSTITUTIONAL BIAS</p>
-          <p class="text-2xl font-extrabold mt-1 text-emerald-400" id="bias-label">BULLISH</p>
-          <p class="text-[10px] text-slate-400 mt-1" id="bias-confidence">Confidence Score: 85%</p>
-        </div>
-
-        <div class="glass-card p-4">
-          <p class="text-xs text-slate-400 font-medium">ENTRY GATE STATUS</p>
-          <p class="text-2xl font-extrabold mt-1 text-amber-400" id="gate-status">READY</p>
-          <p class="text-[10px] text-slate-400 mt-1" id="gate-subtext">Awaiting Confluence</p>
-        </div>
-
-        <div class="glass-card p-4">
-          <p class="text-xs text-slate-400 font-medium">RSI MOMENTUM</p>
-          <p class="text-2xl font-extrabold mt-1 text-blue-400" id="rsi-val">56.2</p>
-          <p class="text-[10px] text-slate-400 mt-1">1H Timeframe Oscillator</p>
-        </div>
-      </div>
-
-      <!-- Timeframe Matrix & AI Technical Reasoning -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass-card p-5">
-          <h2 class="text-sm font-semibold tracking-wider text-slate-300 uppercase mb-4 flex items-center justify-between">
-            Timeframe Alignment Matrix <i class="fa-solid fa-layer-group text-slate-500"></i>
-          </h2>
-          <div class="space-y-4">
-            <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-slate-400">1D Daily Structure</span>
-                <span class="text-emerald-400" id="tf-1d-text">Bullish (85%)</span>
-              </div>
-              <div class="w-full bg-slate-800 rounded-full h-2">
-                <div class="bg-emerald-500 h-2 rounded-full" id="tf-1d-bar" style="width: 85%"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-slate-400">4H Intermediate Trend</span>
-                <span class="text-emerald-400" id="tf-4h-text">Bullish (78%)</span>
-              </div>
-              <div class="w-full bg-slate-800 rounded-full h-2">
-                <div class="bg-emerald-500 h-2 rounded-full" id="tf-4h-bar" style="width: 78%"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-slate-400">1H Local Execution</span>
-                <span class="text-amber-400" id="tf-1h-text">Bullish (72%)</span>
-              </div>
-              <div class="w-full bg-slate-800 rounded-full h-2">
-                <div class="bg-amber-500 h-2 rounded-full" id="tf-1h-bar" style="width: 72%"></div>
-              </div>
-            </div>
+    <div class="p-6 space-y-6 max-w-7xl mx-auto w-full">
+      
+      <!-- DASHBOARD TAB -->
+      <div id="tab-dashboard-view" class="space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
+            <p class="text-xs text-slate-400 font-semibold uppercase">LIVE PRICE (<span id="ui-pair">XAUUSD</span>)</p>
+            <p id="ui-price" class="text-2xl font-extrabold mt-1 text-white">4392.89</p>
+            <p class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-wifi"></i> Real-time Feed</p>
+          </div>
+          <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
+            <p class="text-xs text-slate-400 font-semibold uppercase">INSTITUTIONAL BIAS</p>
+            <p id="ui-bias" class="text-2xl font-extrabold mt-1 text-emerald-400">BULLISH</p>
+            <p id="ui-confidence" class="text-[10px] text-slate-400 mt-1">Confidence Score: 85%</p>
+          </div>
+          <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
+            <p class="text-xs text-slate-400 font-semibold uppercase">ENTRY GATE STATUS</p>
+            <p id="ui-gate" class="text-2xl font-extrabold mt-1 text-amber-400">READY</p>
+            <p class="text-[10px] text-slate-400 mt-1">Awaiting Confluence</p>
+          </div>
+          <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
+            <p class="text-xs text-slate-400 font-semibold uppercase">RSI MOMENTUM</p>
+            <p id="ui-rsi" class="text-2xl font-extrabold mt-1 text-blue-400">58.4</p>
+            <p class="text-[10px] text-slate-400 mt-1">1H Timeframe Oscillator</p>
           </div>
         </div>
 
-        <div class="glass-card p-5 flex flex-col justify-between">
-          <div>
-            <h2 class="text-sm font-semibold tracking-wider text-slate-300 uppercase mb-3 flex items-center justify-between">
-              Gemini Technical Reasoning Engine <i class="fa-solid fa-brain text-blue-400"></i>
-            </h2>
-            <div id="ai-reasoning" class="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-lg border border-slate-800/80 min-h-[110px]">
-              Fetching pair live analysis...
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-cardBg p-5 rounded-xl border border-borderBg">
+            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 flex justify-between items-center border-b border-borderBg pb-3">
+              <span>Timeframe Alignment Matrix</span>
+              <i class="fa-solid fa-layer-group text-slate-500"></i>
+            </h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-slate-400">1D Daily Structure</span>
+                  <span id="d1-val" class="text-emerald-400">Bullish (85%)</span>
+                </div>
+                <div class="w-full bg-borderBg rounded-full h-2">
+                  <div id="d1-bar" class="bg-emerald-400 h-2 rounded-full transition-all duration-300" style="width: 85%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-slate-400">4H Intermediate Trend</span>
+                  <span id="h4-val" class="text-emerald-400">Bullish (78%)</span>
+                </div>
+                <div class="w-full bg-borderBg rounded-full h-2">
+                  <div id="h4-bar" class="bg-emerald-400 h-2 rounded-full transition-all duration-300" style="width: 78%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-slate-400">1H Local Execution</span>
+                  <span id="h1-val" class="text-amber-400">Bullish (72%)</span>
+                </div>
+                <div class="w-full bg-borderBg rounded-full h-2">
+                  <div id="h1-bar" class="bg-amber-400 h-2 rounded-full transition-all duration-300" style="width: 72%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-cardBg p-5 rounded-xl border border-borderBg flex flex-col justify-between">
+            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex justify-between items-center border-b border-borderBg pb-3">
+              <span>Gemini Technical Reasoning Engine</span>
+              <i class="fa-solid fa-brain text-blue-400"></i>
+            </h3>
+            <div id="ui-reasoning" class="text-xs text-slate-300 bg-darkBg/60 p-4 rounded-lg border border-borderBg min-h-[120px] leading-relaxed">
+              Loading market parameters...
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- TAB 2: AI TRADE AUDIT REPORT -->
-    <section id="view-audit" class="hidden space-y-6">
-      <div class="glass-card p-6">
-        <h2 class="text-lg font-bold text-white mb-2">AI Chart & Trade Setup Audit</h2>
-        <p class="text-xs text-slate-400 mb-6">Upload your TradingView or MT4/MT5 chart screenshot for instant ICT & Price Action feedback.</p>
-
-        <div id="audit-preview-container" class="hidden mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <p class="text-xs font-semibold text-slate-400 mb-2">Uploaded Chart Screenshot:</p>
-            <img id="audit-img-preview" class="w-full rounded-lg border border-slate-700 object-cover max-h-[350px]">
-          </div>
-          <div class="glass-card p-5 bg-slate-900/90 border-slate-700">
-            <div class="flex justify-between items-center mb-4">
-              <span class="text-xs font-bold uppercase text-slate-400">Audit Summary Report</span>
-              <span id="audit-score-badge" class="px-2.5 py-1 rounded text-xs font-extrabold bg-blue-600/30 text-blue-400 border border-blue-500/40">GRADE A</span>
-            </div>
-            <div id="audit-report-content" class="text-xs text-slate-300 space-y-3 leading-relaxed">
-              Analyzing chart patterns, entry gates, and liquidity pools...
-            </div>
-          </div>
-        </div>
-
-        <div onclick="document.getElementById('auditInput').click()" class="border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-xl p-10 text-center cursor-pointer transition-colors bg-slate-900/30">
-          <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-400 mb-2"></i>
-          <p class="text-sm font-semibold text-slate-200">Click to upload chart screenshot</p>
-          <p class="text-xs text-slate-500 mt-1">Supports PNG, JPG, JPEG</p>
+      <!-- AUDIT TAB -->
+      <div id="tab-audit-view" class="hidden bg-cardBg p-6 rounded-xl border border-borderBg space-y-4">
+        <h3 class="text-lg font-bold text-white">AI Trade & Chart Setup Audit</h3>
+        <p class="text-xs text-slate-400">Upload chart screenshot to generate institutional analysis report.</p>
+        <div id="audit-report-box" class="hidden bg-darkBg p-4 rounded-xl border border-borderBg text-xs space-y-2">
+          <div class="font-bold text-emerald-400 text-sm">Execution Grade: <span id="audit-grade">A+</span></div>
+          <div class="text-slate-300" id="audit-body">Report generated.</div>
         </div>
       </div>
-    </section>
 
-    <!-- TAB 3: ECONOMIC CALENDAR (FOREX FACTORY STYLE) -->
-    <section id="view-calendar" class="hidden space-y-6">
-      <div class="glass-card p-6">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h2 class="text-lg font-bold text-white">Economic News Calendar</h2>
-            <p class="text-xs text-slate-400">High Impact Market Events (Pakistan Standard Time - PKT)</p>
-          </div>
-          <span class="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded border border-red-500/30 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> High Risk Radar</span>
-        </div>
-
+      <!-- CALENDAR TAB -->
+      <div id="tab-calendar-view" class="hidden bg-cardBg p-6 rounded-xl border border-borderBg space-y-4">
+        <h3 class="text-lg font-bold text-white">Economic Calendar (Forex Factory Style)</h3>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-darkBg text-slate-400 border-b border-borderBg">
               <tr>
                 <th class="p-3">Date / Time (PKT)</th>
                 <th class="p-3">Currency</th>
@@ -199,16 +171,14 @@
                 <th class="p-3">Previous</th>
               </tr>
             </thead>
-            <tbody id="economic-calendar-body" class="divide-y divide-slate-800/50 text-slate-300">
-              <!-- Calendar Dynamic Rows -->
-            </tbody>
+            <tbody id="calendar-rows" class="divide-y divide-borderBg"></tbody>
           </table>
         </div>
       </div>
-    </section>
 
+    </div>
   </main>
 
-  <script src="script.js"></script>
+  <script src="audit.js"></script>
 </body>
 </html>
