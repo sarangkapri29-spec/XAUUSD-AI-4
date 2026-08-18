@@ -1,174 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TradeFX Terminal | Institutional AI Analyst</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { background-color: #0b0e14; color: #e2e8f0; font-family: sans-serif; }
-    .glass-card { background: rgba(19, 24, 34, 0.9); border: 1px solid #1e2638; border-radius: 12px; }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col md:flex-row">
+TradeFX Terminal | Institutional AI Analysis
+  
 
-  <!-- Sidebar -->
-  <aside class="w-full md:w-64 bg-[#131822] border-r border-[#1e2638] p-5 flex flex-col justify-between">
-    <div>
-      <div class="flex items-center gap-3 mb-8">
-        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white">TF</div>
-        <span class="font-bold text-lg text-white">TradeFX <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">ELITE</span></span>
-      </div>
-      <nav class="space-y-2">
-        <button onclick="switchTab('dashboard')" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-          <i class="fa-solid fa-chart-line"></i> Dashboard
-        </button>
-        <button onclick="switchTab('audit')" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-semibold text-slate-400 hover:bg-[#1e2638] transition">
-          <i class="fa-solid fa-camera text-emerald-400"></i> AI Trade Audit
-        </button>
-        <button onclick="switchTab('calendar')" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-semibold text-slate-400 hover:bg-[#1e2638] transition">
-          <i class="fa-solid fa-calendar text-rose-400"></i> Economic Calendar
-        </button>
-      </nav>
-    </div>
-    <div class="text-xs text-slate-500 flex items-center gap-2 pt-4 border-t border-[#1e2638]">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Gemini 2.0 Engine Live
-    </div>
-  </aside>
 
-  <!-- Main Area -->
-  <main class="flex-1 flex flex-col overflow-y-auto">
-    <header class="bg-[#131822] border-b border-[#1e2638] p-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-10">
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-slate-400 font-semibold uppercase">Active Pair:</span>
-        <div class="flex gap-2">
-          <button id="btn-XAUUSD" onclick="selectPair('XAUUSD')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white">XAUUSD</button>
-          <button id="btn-EURUSD" onclick="selectPair('EURUSD')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e2638] text-slate-300 hover:bg-slate-700">EURUSD</button>
-          <button id="btn-NASDAQ" onclick="selectPair('NASDAQ')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e2638] text-slate-300 hover:bg-slate-700">NASDAQ</button>
-          <button id="btn-US30" onclick="selectPair('US30')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e2638] text-slate-300 hover:bg-slate-700">US30</button>
-        </div>
-      </div>
-      <div class="flex items-center gap-3">
-        <input type="file" id="auditInput" accept="image/*" class="hidden" onchange="uploadScreenshot(event)">
-        <button onclick="document.getElementById('auditInput').click()" class="bg-[#131822] border border-[#1e2638] text-slate-200 px-4 py-2 rounded-lg text-xs font-bold hover:bg-[#1e2638] transition flex items-center gap-2">
-          <i class="fa-solid fa-camera text-blue-400"></i> Audit Screenshot
-        </button>
-        <button onclick="fetchLivePairData()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-emerald-500 transition flex items-center gap-2">
-          <i class="fa-solid fa-rotate"></i> Analyze Live
-        </button>
-      </div>
-    </header>
 
-    <div class="p-6 space-y-6 max-w-7xl mx-auto w-full">
+  
+  
+    
       
-      <!-- DASHBOARD TAB -->
-      <div id="tab-dashboard-view" class="space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="glass-card p-4">
-            <p class="text-xs text-slate-400 font-semibold uppercase">LIVE PRICE (<span id="ui-pair">XAUUSD</span>)</p>
-            <p id="ui-price" class="text-2xl font-extrabold mt-1 text-white">2492.40</p>
-            <p class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-wifi"></i> Real-time Feed</p>
-          </div>
-          <div class="glass-card p-4">
-            <p class="text-xs text-slate-400 font-semibold uppercase">INSTITUTIONAL BIAS</p>
-            <p id="ui-bias" class="text-2xl font-extrabold mt-1 text-emerald-400">BULLISH</p>
-            <p id="ui-confidence" class="text-[10px] text-slate-400 mt-1">Confidence Score: 85%</p>
-          </div>
-          <div class="glass-card p-4">
-            <p class="text-xs text-slate-400 font-semibold uppercase">ENTRY GATE STATUS</p>
-            <p id="ui-gate" class="text-2xl font-extrabold mt-1 text-amber-400">READY</p>
-            <p class="text-[10px] text-slate-400 mt-1">Awaiting Confluence</p>
-          </div>
-          <div class="glass-card p-4">
-            <p class="text-xs text-slate-400 font-semibold uppercase">RSI MOMENTUM</p>
-            <p id="ui-rsi" class="text-2xl font-extrabold mt-1 text-blue-400">58.4</p>
-            <p class="text-[10px] text-slate-400 mt-1">1H Timeframe Oscillator</p>
-          </div>
-        </div>
+        TF
+        
+          TradeFX
+          ELITE
+        
+      
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="glass-card p-5">
-            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 border-b border-[#1e2638] pb-3 flex justify-between">
-              <span>Timeframe Alignment Matrix</span>
-              <i class="fa-solid fa-layer-group text-slate-500"></i>
-            </h3>
-            <div class="space-y-4">
-              <div>
-                <div class="flex justify-between text-xs font-bold mb-1">
-                  <span class="text-slate-400">1D Daily Structure</span>
-                  <span id="d1-val" class="text-emerald-400">Bullish (85%)</span>
-                </div>
-                <div class="w-full bg-[#1e2638] rounded-full h-2">
-                  <div id="d1-bar" class="bg-emerald-400 h-2 rounded-full" style="width: 85%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-xs font-bold mb-1">
-                  <span class="text-slate-400">4H Intermediate Trend</span>
-                  <span id="h4-val" class="text-emerald-400">Bullish (78%)</span>
-                </div>
-                <div class="w-full bg-[#1e2638] rounded-full h-2">
-                  <div id="h4-bar" class="bg-emerald-400 h-2 rounded-full" style="width: 78%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-xs font-bold mb-1">
-                  <span class="text-slate-400">1H Local Execution</span>
-                  <span id="h1-val" class="text-amber-400">Bullish (72%)</span>
-                </div>
-                <div class="w-full bg-[#1e2638] rounded-full h-2">
-                  <div id="h1-bar" class="bg-amber-400 h-2 rounded-full" style="width: 72%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+      
+        
+          📊 Dashboard
+        
+        
+          📷 AI Trade Audit
+        
+        
+          📅 Economic Calendar
+        
+      
+    
 
-          <div class="glass-card p-5 flex flex-col justify-between">
-            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 border-b border-[#1e2638] pb-3 flex justify-between">
-              <span>Gemini Technical Reasoning Engine</span>
-              <i class="fa-solid fa-brain text-blue-400"></i>
-            </h3>
-            <div id="ui-reasoning" class="text-xs text-slate-300 bg-[#0b0e14]/60 p-4 rounded-lg border border-[#1e2638] min-h-[120px] leading-relaxed">
-              Fetching active market structure...
-            </div>
-          </div>
-        </div>
-      </div>
+    
+      
+      Gemini 2.0 Engine Live
+    
+  
 
-      <!-- AUDIT TAB -->
-      <div id="tab-audit-view" class="hidden glass-card p-6 space-y-4">
-        <h3 class="text-lg font-bold text-white">AI Trade Setup Audit</h3>
-        <p class="text-xs text-slate-400">Upload chart screenshot for institutional feedback.</p>
-        <div id="audit-report-box" class="hidden bg-[#0b0e14] p-4 rounded-xl border border-[#1e2638] text-xs space-y-2">
-          <div class="font-bold text-emerald-400 text-sm">Execution Grade: <span id="audit-grade">A+</span></div>
-          <div class="text-slate-300" id="audit-body">Report generated.</div>
-        </div>
-      </div>
+  
+  
 
-      <!-- CALENDAR TAB -->
-      <div id="tab-calendar-view" class="hidden glass-card p-6 space-y-4">
-        <h3 class="text-lg font-bold text-white">Economic News Calendar (PKT)</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-[#0b0e14] text-slate-400 border-b border-[#1e2638]">
-              <tr>
-                <th class="p-3">Date / Time (PKT)</th>
-                <th class="p-3">Currency</th>
-                <th class="p-3">Impact</th>
-                <th class="p-3">Event Name</th>
-                <th class="p-3">Forecast</th>
-                <th class="p-3">Previous</th>
-              </tr>
-            </thead>
-            <tbody id="calendar-rows" class="divide-y divide-[#1e2638]"></tbody>
-          </table>
-        </div>
-      </div>
+    
+    
+      
+        Active Pair:
+        
+          XAUUSD
+          EURUSD
+          NASDAQ
+          US30
+        
+      
+      🔄 Refresh Market
+    
 
-    </div>
-  </main>
+    
+    
+      
+        
+          LIVE PRICE (XAUUSD)
+          Loading...
+          ● Real-time Feed
+        
 
-  <script src="audit.js"></script>
-</body>
-</html>
+        
+          INSTITUTIONAL BIAS
+          --
+          Confidence Score: --
+        
+
+        
+          ENTRY GATE STATUS
+          --
+          Awaiting Confluence
+        
+
+        
+          RSI MOMENTUM
+          --
+          1H Timeframe Oscillator
+        
+      
+
+      
+        
+          TIMEFRAME ALIGNMENT MATRIX
+          
+          
+            
+              1D Daily Structure
+              --
+            
+            
+              
+            
+          
+
+          
+            
+              4H Intermediate Trend
+              --
+            
+            
+              
+            
+          
+
+          
+            
+              1H Local Execution
+              --
+            
+            
+              
+            
+          
+        
+
+        
+          GEMINI TECHNICAL REASONING ENGINE
+          
+            Fetching analysis...
