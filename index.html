@@ -1,167 +1,230 @@
-TradeFX Terminal | Institutional AI Analyst
-    
-    
-    
-    
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeFX Terminal | Institutional AI Analyst</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0e14',
+                        cardBg: '#131822',
+                        borderBg: '#1e2638',
+                        accentGreen: '#00e676',
+                        accentRed: '#ff5252',
+                        accentBlue: '#29b6f6'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-darkBg text-slate-200 font-sans antialiased flex h-screen overflow-hidden">
 
+    <!-- Left Sidebar -->
+    <aside class="w-64 bg-cardBg border-r border-borderBg flex flex-col justify-between hidden md:flex">
+        <div>
+            <div class="p-5 flex items-center gap-3 border-b border-borderBg">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-accentBlue to-accentGreen flex items-center justify-center font-bold text-darkBg">TF</div>
+                <span class="font-bold text-lg tracking-wide text-white">TradeFX <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">ELITE</span></span>
+            </div>
+            <nav class="p-4 space-y-1.5 text-sm font-medium">
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-accentBlue/10 text-accentBlue font-semibold border border-accentBlue/20">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
+                    <i class="fa-solid fa-list-check"></i> Live Bias Matrix
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
+                    <i class="fa-solid fa-camera"></i> AI Trade Audit
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
+                    <i class="fa-solid fa-bolt"></i> High Impact News
+                </a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-borderBg">
+            <div class="flex items-center gap-3 text-xs text-slate-400">
+                <div class="w-2.5 h-2.5 rounded-full bg-accentGreen animate-pulse"></div>
+                <span>Gemini 2.0 Engine Live</span>
+            </div>
+        </div>
+    </aside>
 
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Top Navigation -->
+        <header class="bg-cardBg border-b border-borderBg p-4 flex justify-between items-center sticky top-0 z-10">
+            <div class="flex items-center gap-2">
+                <span class="text-slate-400 text-sm">Active Pair:</span>
+                <div class="flex gap-2">
+                    <button onclick="switchSymbol('XAUUSD')" id="btn-XAUUSD" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-accentBlue text-darkBg">XAUUSD</button>
+                    <button onclick="switchSymbol('EURUSD')" id="btn-EURUSD" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">EURUSD</button>
+                    <button onclick="switchSymbol('NASDAQ')" id="btn-NASDAQ" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">NASDAQ</button>
+                    <button onclick="switchSymbol('US30')" id="btn-US30" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">US30</button>
+                </div>
+            </div>
+            <button onclick="runAnalysis()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs px-4 py-2 rounded-lg hover:opacity-90 transition flex items-center gap-2">
+                <i class="fa-solid fa-arrows-rotate"></i> Analyze Live
+            </button>
+        </header>
 
-    
-        
-            
-                TF
-                TradeFX ELITE
-            
-            
-                
-                     Dashboard
-                
-                
-                     Live Bias Matrix
-                
-                
-                     AI Trade Audit
-                
-            
-        
-        
-            
-                
-                Gemini 2.0 Flash Vision Live
-            
-        
-    
+        <div class="p-6 space-y-6 max-w-7xl mx-auto w-full">
+            <!-- KPI Metric Cards Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
+                    <div class="text-xs font-semibold text-slate-400 uppercase">Live Price</div>
+                    <div id="ui-live-price" class="text-2xl font-extrabold text-white mt-1">Fetching...</div>
+                    <div class="text-[10px] text-emerald-400 mt-1"><i class="fa-solid fa-wifi"></i> Real-time Feed</div>
+                </div>
+                <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
+                    <div class="text-xs font-semibold text-slate-400 uppercase">Institutional Bias</div>
+                    <div id="ui-bias" class="text-2xl font-extrabold text-accentGreen mt-1">ANALYZING</div>
+                    <div id="ui-confidence" class="text-[10px] text-slate-400 mt-1">Confidence Score: --%</div>
+                </div>
+                <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
+                    <div class="text-xs font-semibold text-slate-400 uppercase">Entry Gate Status</div>
+                    <div id="ui-entry-gate" class="text-2xl font-extrabold text-amber-400 mt-1">WAIT</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Awaiting 15M Retest</div>
+                </div>
+                <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
+                    <div class="text-xs font-semibold text-slate-400 uppercase">RSI Momentum</div>
+                    <div id="ui-rsi" class="text-2xl font-extrabold text-accentBlue mt-1">--.-</div>
+                    <div class="text-[10px] text-slate-400 mt-1">1H Timeframe Oscillator</div>
+                </div>
+            </div>
 
-    
-        
-            
-                Active Pair:
+            <!-- Central Grid: Multi-Timeframe Matrix + AI Reasoning -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                    XAUUSD
-                    EURUSD
-                    NASDAQ
-                    US30
-                
-            
-            
-                
-                     Audit Screenshot
-                
-                
-                     Analyze Live
-                
-            
-        
-
-        
-            
-                
-                    Live Price
-                    Fetching...
-                     Real-time Feed
-                
-                
-                    Institutional Bias
-                    ANALYZING
-                    Confidence Score: --%
-                
-                
-                    Entry Gate Status
-                    WAIT
-                    Awaiting 15M Retest
-                
-                
-                    RSI Momentum
-                    --.-
-                    1H Timeframe Oscillator
-                
-            
-
-            
-                
-                    
+                <!-- Multi-Timeframe Alignment (1D / 4H / 1H) -->
+                <div class="bg-cardBg p-5 rounded-xl border border-borderBg flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 border-b border-borderBg pb-3 mb-4 flex items-center justify-between">
+                            <span>Timeframe Alignment Matrix</span>
+                            <i class="fa-solid fa-layer-group text-slate-500"></i>
+                        </h3>
                         
-                            Timeframe Alignment Matrix
-                            
-                        
-                        
-                            
-                                
-                                    1D Daily Structure
-                                    Bullish (85%)
-                                
-                                
-                                    
-                                
-                            
-                            
-                                
-                                    4H Intermediate Trend
-                                    Bullish (78%)
-                                
-                                
-                                    
-                                
-                            
-                            
-                                
-                                    1H Local Execution
-                                    Pullback (45%)
-                                
-                                
-                                    
-                                
-                            
-                        
-                    
-                    
-                        
+                        <div class="space-y-4">
+                            <!-- 1D Bar -->
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-slate-400">1D Daily Structure</span>
+                                    <span id="d1-bias-text" class="text-emerald-400">Bullish (85%)</span>
+                                </div>
+                                <div class="w-full bg-borderBg h-2 rounded-full overflow-hidden">
+                                    <div id="d1-bar" class="bg-accentGreen h-full rounded-full transition-all duration-500" style="width: 85%"></div>
+                                </div>
+                            </div>
+
+                            <!-- 4H Bar -->
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-slate-400">4H Intermediate Trend</span>
+                                    <span id="h4-bias-text" class="text-emerald-400">Bullish (78%)</span>
+                                </div>
+                                <div class="w-full bg-borderBg h-2 rounded-full overflow-hidden">
+                                    <div id="h4-bar" class="bg-accentGreen h-full rounded-full transition-all duration-500" style="width: 78%"></div>
+                                </div>
+                            </div>
+
+                            <!-- 1H Bar -->
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-slate-400">1H Local Execution</span>
+                                    <span id="h1-bias-text" class="text-amber-400">Pullback (45%)</span>
+                                </div>
+                                <div class="w-full bg-borderBg h-2 rounded-full overflow-hidden">
+                                    <div id="h1-bar" class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 45%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-borderBg text-xs text-slate-400">
+                        <i class="fa-solid fa-circle-info text-accentBlue mr-1"></i>
                         Confluence rule: Full entry setup triggers when 1D, 4H, and 1H align above 70%.
-                    
-                
+                    </div>
+                </div>
 
-                
+                <!-- AI Institutional Analysis Panel -->
+                <div class="lg:col-span-2 bg-cardBg p-5 rounded-xl border border-borderBg">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 border-b border-borderBg pb-3 mb-4 flex items-center justify-between">
+                        <span>Gemini Technical Reasoning Engine</span>
+                        <i class="fa-solid fa-brain text-accentBlue"></i>
+                    </h3>
                     
-                        Gemini Technical Reasoning Engine
-                        
-                    
-                    
+                    <div id="ui-reasoning" class="text-slate-300 text-sm leading-relaxed min-h-[140px] bg-darkBg/50 p-4 rounded-lg border border-borderBg">
                         Click "Analyze Live" button above to pull institutional ICT/SMC structure for the selected market asset.
-                    
-                
-            
-        
-    
+                    </div>
 
-    
-        
-            
-                
-                     Trade Screenshot AI Audit
-                
-                
-            
+                    <!-- News Ticker -->
+                    <div class="mt-4 bg-darkBg/80 p-2.5 rounded-lg border border-borderBg flex items-center gap-3 overflow-hidden text-xs">
+                        <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded font-bold uppercase">NEWS</span>
+                        <marquee class="text-slate-400">NFP & CPI High Volatility Warning: Keep risk strictly below 1% during US Session Open.</marquee>
+                    </div>
+                </div>
 
-            
-                
-                
-                    
-                    Click to Select Chart Screenshot
-                    Supports PNG, JPG (TradingView / MT4 / MT5 Screenshots)
-                
-            
+            </div>
+        </div>
+    </main>
 
-            
-                
-                    Execution Grade:
-                    --
-                
-                Verdict: --
-                Entry Quality: --
-                Key Mistake: --
-                What Went Well: --
-                Actionable Fix: --
-            
+    <script>
+        let currentSymbol = 'XAUUSD';
 
-            
-                Generate AI Audit Report
+        function switchSymbol(symbol) {
+            currentSymbol = symbol;
+            document.querySelectorAll('.symbol-btn').forEach(btn => {
+                btn.className = 'symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700';
+            });
+            document.getElementById(`btn-${symbol}`).className = 'symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-accentBlue text-darkBg';
+            runAnalysis();
+        }
+
+        async function runAnalysis() {
+            document.getElementById('ui-reasoning').innerText = 'Fetching live feeds and generating multi-timeframe analysis...';
+            try {
+                const res = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ symbol: currentSymbol })
+                });
+                const data = await res.json();
+
+                document.getElementById('ui-live-price').innerText = data.price || data.currentPrice || '--';
+                document.getElementById('ui-bias').innerText = data.signal || 'NEUTRAL';
+                document.getElementById('ui-confidence').innerText = `Confidence Score: ${data.confidence || 75}%`;
+                document.getElementById('ui-entry-gate').innerText = data.entry_gate || 'WAIT';
+                document.getElementById('ui-rsi').innerText = data.rsi || '48.5';
+                document.getElementById('ui-reasoning').innerText = data.reasoning || data.analysis || 'Analysis updated.';
+
+                // Structure updates
+                const d1Score = data.d1_score || data.structures?.d1?.score || 80;
+                const h4Score = data.h4_score || data.structures?.h4?.score || 75;
+                const h1Score = data.h1_score || data.structures?.h1?.score || 45;
+
+                document.getElementById('d1-bias-text').innerText = `${data.d1_bias || 'Bullish'} (${d1Score}%)`;
+                document.getElementById('d1-bar').style.width = `${d1Score}%`;
+
+                document.getElementById('h4-bias-text').innerText = `${data.h4_bias || 'Bullish'} (${h4Score}%)`;
+                document.getElementById('h4-bar').style.width = `${h4Score}%`;
+
+                document.getElementById('h1-bias-text').innerText = `${data.h1_bias || 'Bearish'} (${h1Score}%)`;
+                document.getElementById('h1-bar').style.width = `${h1Score}%`;
+
+            } catch (err) {
+                document.getElementById('ui-reasoning').innerText = 'Error loading data. Check console or Vercel logs.';
+            }
+        }
+
+        // Auto run on load
+        window.onload = runAnalysis;
+    </script>
+</body>
+</html>
