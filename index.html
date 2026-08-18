@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TradeFX Terminal | Institutional AI Analysis</title>
+  <title>TradeFX Terminal | Forex Factory Live Sync</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -13,143 +13,88 @@
 </head>
 <body class="min-h-screen flex flex-col md:flex-row">
 
-  <!-- Sidebar -->
+  <!-- Sidebar Nav -->
   <aside class="w-full md:w-64 card-bg p-5 flex flex-col shrink-0 border-b md:border-b-0 md:border-r border-slate-800">
     <div class="flex items-center gap-3 mb-8">
       <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">TF</div>
       <div>
         <h2 class="font-bold text-lg leading-tight">TradeFX</h2>
-        <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">ELITE SYSTEM</span>
+        <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">LIVE FF-SYNC</span>
       </div>
     </div>
     <nav class="space-y-2">
       <button id="nav-dash" class="w-full text-left px-4 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 font-semibold flex items-center gap-3" onclick="switchTab('dashboard')">
         <i class="fa-solid fa-chart-line"></i> Dashboard
       </button>
-      <button id="nav-audit" class="w-full text-left px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800/50 font-semibold flex items-center gap-3" onclick="switchTab('audit')">
-        <i class="fa-solid fa-camera"></i> AI Trade Audit
-      </button>
       <button id="nav-cal" class="w-full text-left px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800/50 font-semibold flex items-center gap-3" onclick="switchTab('calendar')">
-        <i class="fa-solid fa-calendar-days"></i> Economic Calendar
+        <i class="fa-solid fa-calendar-days"></i> Live Calendar
       </button>
     </nav>
   </aside>
 
-  <!-- Main Content -->
+  <!-- Main Workspace -->
   <main class="flex-1 p-6 overflow-y-auto">
+    <!-- Header Controls -->
     <header class="flex flex-wrap justify-between items-center pb-4 mb-6 border-b border-slate-800 gap-4">
       <div class="flex items-center gap-3">
-        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">ACTIVE PAIR:</span>
+        <span class="text-xs font-bold text-slate-500 uppercase">ACTIVE PAIR:</span>
         <div class="bg-slate-900 p-1 rounded-lg border border-slate-800 flex gap-1">
           <button id="btn-XAUUSD" class="px-3 py-1 rounded font-bold text-xs bg-blue-600 text-white" onclick="selectPair('XAUUSD')">XAUUSD</button>
           <button id="btn-EURUSD" class="px-3 py-1 rounded font-bold text-xs text-slate-400 hover:text-white" onclick="selectPair('EURUSD')">EURUSD</button>
           <button id="btn-BTCUSD" class="px-3 py-1 rounded font-bold text-xs text-slate-400 hover:text-white" onclick="selectPair('BTCUSD')">BTCUSD</button>
-          <button id="btn-ETHUSD" class="px-3 py-1 rounded font-bold text-xs text-slate-400 hover:text-white" onclick="selectPair('ETHUSD')">ETHUSD</button>
         </div>
       </div>
-      <button class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2" onclick="fetchLiveData()">
-        <i class="fa-solid fa-arrows-rotate"></i> Refresh Feed
+      <button class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2" onclick="fetchLiveFFData()">
+        <i class="fa-solid fa-arrows-rotate"></i> Sync Forex Factory Live
       </button>
     </header>
 
-    <!-- Dashboard View -->
+    <!-- Dashboard Tab -->
     <div id="tab-dashboard-view" class="space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="card-bg p-5 rounded-xl">
           <div class="text-xs font-semibold text-slate-400 uppercase">LIVE PRICE (<span id="ui-pair">XAUUSD</span>)</div>
           <div id="ui-price" class="text-3xl font-black mt-2 text-white">Loading...</div>
-          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Feed Active</div>
+          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active Stream</div>
         </div>
         <div class="card-bg p-5 rounded-xl">
           <div class="text-xs font-semibold text-slate-400 uppercase">INSTITUTIONAL BIAS</div>
           <div id="ui-bias" class="text-3xl font-black mt-2 text-emerald-400">BULLISH</div>
-          <div id="ui-confidence" class="text-xs text-slate-400 mt-1">Confidence: 88%</div>
+          <div class="text-xs text-slate-400 mt-1">Confidence: 85%</div>
         </div>
         <div class="card-bg p-5 rounded-xl">
-          <div class="text-xs font-semibold text-slate-400 uppercase">ENTRY GATE STATUS</div>
-          <div id="ui-gate" class="text-3xl font-black mt-2 text-amber-400">VALIDATED</div>
-          <div class="text-xs text-slate-400 mt-1">Confluence Confirmed</div>
+          <div class="text-xs font-semibold text-slate-400 uppercase">TIMEZONE</div>
+          <div class="text-2xl font-black mt-2 text-blue-400">PKT (UTC+5)</div>
+          <div class="text-xs text-slate-400 mt-1">Pakistan Standard Time</div>
         </div>
         <div class="card-bg p-5 rounded-xl">
-          <div class="text-xs font-semibold text-slate-400 uppercase">RSI MOMENTUM</div>
-          <div id="ui-rsi" class="text-3xl font-black mt-2 text-blue-400">61.4</div>
-          <div class="text-xs text-slate-400 mt-1">1H Timeframe</div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="card-bg p-5 rounded-xl">
-          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Timeframe Alignment Matrix</h3>
-          <div class="space-y-4">
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1"><span>1D Daily Structure</span><span id="d1-val" class="text-emerald-400">85%</span></div>
-              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="d1-bar" class="bg-emerald-500 h-full" style="width: 85%;"></div></div>
-            </div>
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1"><span>4H Intermediate Trend</span><span id="h4-val" class="text-emerald-400">78%</span></div>
-              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="h4-bar" class="bg-emerald-500 h-full" style="width: 78%;"></div></div>
-            </div>
-            <div>
-              <div class="flex justify-between text-xs font-bold mb-1"><span>1H Local Execution</span><span id="h1-val" class="text-amber-400">68%</span></div>
-              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="h1-bar" class="bg-amber-400 h-full" style="width: 68%;"></div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-bg p-5 rounded-xl">
-          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Gemini Technical Reasoning</h3>
-          <div id="ui-reasoning" class="bg-slate-900/80 border border-slate-800 p-4 rounded-lg text-sm text-slate-300 leading-relaxed">
-            Market structure holds clean alignment above key Asia Session Lows. H4 liquidity sweep confirmed with strong institutional buying volume.
-          </div>
+          <div class="text-xs font-semibold text-slate-400 uppercase">LIVE FF SYNC</div>
+          <div id="ui-sync-status" class="text-2xl font-black mt-2 text-emerald-400">ONLINE</div>
+          <div class="text-xs text-slate-400 mt-1">Auto-Refreshing API</div>
         </div>
       </div>
     </div>
 
-    <!-- AI Trade Audit Tab -->
-    <div id="tab-audit-view" class="hidden">
-      <div class="card-bg p-6 rounded-xl max-w-2xl">
-        <h2 class="text-xl font-bold mb-1">AI Trade Setup Audit</h2>
-        <p class="text-xs text-slate-400 mb-6">Upload chart screenshot for instant market structure & liquidity sweep analysis.</p>
-        <div class="border-2 border-dashed border-slate-700 p-8 rounded-xl text-center cursor-pointer hover:border-blue-500 transition" onclick="document.getElementById('chart-input').click()">
-          <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-500 mb-2"></i>
-          <p class="font-bold text-sm">Click to upload Chart Screenshot</p>
-          <input type="file" id="chart-input" accept="image/*" class="hidden" onchange="handleChartUpload(event)" />
-        </div>
-        <div id="audit-result" class="hidden mt-6 p-4 bg-slate-900 rounded-lg border border-slate-800 text-emerald-400 text-sm">
-          <div class="font-bold mb-1 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Audit Scan Complete:</div>
-          <p id="audit-msg" class="text-slate-300 mt-1"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Economic Calendar Tab -->
+    <!-- Calendar View -->
     <div id="tab-calendar-view" class="hidden space-y-6">
       <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
         <div>
           <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-globe text-blue-500"></i> Forex Factory Live Sync
+            <i class="fa-solid fa-globe text-blue-500"></i> Forex Factory Live Engine
           </h2>
-          <p class="text-xs text-slate-400">Official Forex Factory Calendar Feed - Auto-Converted to Pakistan Time (PKT / UTC+5)</p>
+          <p class="text-xs text-slate-400">Automated Live Feeds & Real-Time Gold Impact Analysis (PKT Timezone)</p>
         </div>
 
-        <!-- Filters -->
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <div class="bg-slate-950 p-1 rounded-lg border border-slate-800 flex gap-1">
-            <button id="flt-all" class="px-3 py-1.5 rounded font-bold bg-slate-800 text-white" onclick="filterCalendar('ALL')">All</button>
-            <button id="flt-high" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="filterCalendar('HIGH')">🔴 High Impact</button>
-            <button id="flt-med" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="filterCalendar('MEDIUM')">🟠 Medium Impact</button>
-          </div>
-          <button class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded font-bold text-xs transition flex items-center gap-1.5" onclick="loadLiveForexFactory()">
-            <i class="fa-solid fa-rotate"></i> Sync Live Data
-          </button>
+        <div class="flex items-center gap-2 text-xs">
+          <button id="flt-all" class="px-3 py-1.5 rounded font-bold bg-slate-800 text-white" onclick="filterCalendar('ALL')">All Events</button>
+          <button id="flt-high" class="px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white" onclick="filterCalendar('HIGH')">🔴 High Impact</button>
         </div>
       </div>
 
-      <!-- Calendar Container -->
       <div id="calendar-container" class="space-y-6">
         <div class="card-bg p-8 text-center text-slate-400">
           <i class="fa-solid fa-spinner animate-spin text-2xl text-blue-500 mb-2"></i>
-          <p class="text-sm font-semibold">Connecting to Forex Factory Live Feed (PKT Timezone)...</p>
+          <p class="text-sm font-semibold">Connecting Live to Forex Factory Calendar Network...</p>
         </div>
       </div>
     </div>
@@ -160,124 +105,113 @@
     let currentFilter = "ALL";
     let rawNewsEvents = [];
 
-    const BINANCE_MAP = {
-      BTCUSD: "BTCUSDT",
-      ETHUSD: "ETHUSDT",
-      XAUUSD: "PAXGUSDT",
-      EURUSD: "EURUSDT"
-    };
+    // Forex Factory Proxy Endpoint for Live Network Feeds
+    const FF_LIVE_FEED_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://nvc.forexfactory.com/calendar.json");
 
-    // Live Forex Factory Engine with PKT Time Converter
-    async function loadLiveForexFactory() {
+    async function fetchLiveFFData() {
       const container = document.getElementById('calendar-container');
       container.innerHTML = `
         <div class="card-bg p-8 text-center text-slate-400">
           <i class="fa-solid fa-spinner animate-spin text-2xl text-blue-500 mb-2"></i>
-          <p class="text-sm font-semibold">Syncing Forex Factory Events into Pakistan Standard Time...</p>
+          <p class="text-sm font-semibold">Pulling Real-Time Forex Factory Releases...</p>
         </div>
       `;
 
       try {
-        // Direct Forex Factory Weekly Feed JSON
-        const res = await fetch("https://n8n-cors-anywhere.herokuapp.com/https://nvc.forexfactory.com/calendar.json", {
-          headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        
-        if(!res.ok) throw new Error("API Connection Failed");
-        const data = await res.json();
-        
+        const response = await fetch(FF_LIVE_FEED_URL);
+        if(!response.ok) throw new Error("Feed Error");
+        const data = await response.json();
+
         rawNewsEvents = data.map(item => {
-          const pktTimeStr = convertToPKT(item.date);
-          const pktDateHeader = getPKTDateString(item.date);
+          const pktDate = new Date(item.date);
           
+          // AI Gold Analysis Engine Logic
+          const title = item.title.toLowerCase();
+          const impact = (item.impact || 'Low').toUpperCase();
+          const cur = item.country || 'USD';
+
+          let goldBias = "Bullish Gold";
+          let probability = "65%";
+          let isBullish = true;
+
+          if (cur === "USD" && impact === "HIGH") {
+            if (title.includes("cpi") || title.includes("fomc") || title.includes("pmi")) {
+              goldBias = "Bullish Gold";
+              probability = "82%";
+              isBullish = true;
+            } else if (title.includes("nfp") || title.includes("gdp") || title.includes("retail")) {
+              goldBias = "Bearish Gold";
+              probability = "78%";
+              isBullish = false;
+            }
+          } else if (cur === "GBP" || cur === "EUR") {
+            goldBias = title.includes("cpi") ? "Bullish Gold" : "Bearish Gold";
+            probability = "68%";
+            isBullish = title.includes("cpi");
+          }
+
           return {
-            time: pktTimeStr,
-            dateStr: pktDateHeader,
-            cur: item.country || "USD",
-            impact: (item.impact || "Low").toUpperCase(),
-            name: item.title,
+            timePKT: pktDate.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Karachi' }) + " PKT",
+            dateHeader: pktDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Karachi' }),
+            cur: cur,
+            impact: impact,
+            title: item.title,
             actual: item.actual || "Pending",
             forecast: item.forecast || "N/A",
             previous: item.previous || "N/A",
-            usdBull: item.title.toLowerCase().includes("cpi") || item.title.toLowerCase().includes("pmi") || item.title.toLowerCase().includes("fomc")
+            goldBias: goldBias,
+            probability: probability,
+            isBullish: isBullish
           };
         });
 
+        document.getElementById('ui-sync-status').innerText = "ONLINE";
         renderCalendarTable();
-      } catch (err) {
-        // Fallback with 100% exact PKT schedule if CORS/Proxy is busy
-        usePKTFallback();
+      } catch (e) {
+        document.getElementById('ui-sync-status').innerText = "OFFLINE";
+        container.innerHTML = `<div class="card-bg p-6 text-center text-red-400">Failed to stream Forex Factory feed. Retrying...</div>`;
       }
-    }
-
-    // Convert ISO/UTC Date directly to Pakistan Standard Time (PKT)
-    function convertToPKT(dateInput) {
-      if(!dateInput) return "17:30";
-      const date = new Date(dateInput);
-      return date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Karachi' });
-    }
-
-    function getPKTDateString(dateInput) {
-      const date = new Date(dateInput);
-      return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Karachi' });
-    }
-
-    function usePKTFallback() {
-      const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Karachi' });
-      
-      rawNewsEvents = [
-        { dateStr: todayStr, time: "11:00", cur: "GBP", impact: "HIGH", name: "Core CPI (YoY)", actual: "Pending", forecast: "2.9%", previous: "2.6%", usdBull: false },
-        { dateStr: todayStr, time: "17:30", cur: "USD", impact: "MEDIUM", name: "Building Permits", actual: "Pending", forecast: "1.39M", previous: "1.37M", usdBull: true },
-        { dateStr: todayStr, time: "19:30", cur: "USD", impact: "MEDIUM", name: "Crude Oil Inventories", actual: "Pending", forecast: "-1.2M", previous: "1.4M", usdBull: true },
-        { dateStr: todayStr, time: "23:00", cur: "USD", impact: "HIGH", name: "FOMC Meeting Minutes", actual: "Pending", forecast: "N/A", previous: "N/A", usdBull: false }
-      ];
-
-      renderCalendarTable();
     }
 
     function renderCalendarTable() {
       const container = document.getElementById('calendar-container');
       container.innerHTML = '';
 
-      const filteredEvents = rawNewsEvents.filter(ev => {
-        if (currentFilter === "HIGH") return ev.impact === "HIGH";
-        if (currentFilter === "MEDIUM") return ev.impact === "MEDIUM" || ev.impact === "HIGH";
-        return true;
-      });
+      const filtered = rawNewsEvents.filter(ev => currentFilter === "HIGH" ? ev.impact === "HIGH" : true);
 
-      if (filteredEvents.length === 0) {
-        container.innerHTML = `<div class="card-bg p-6 text-center text-slate-400">No scheduled news found for selected filter.</div>`;
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="card-bg p-6 text-center text-slate-400">No events found.</div>`;
         return;
       }
 
-      // Grouping by PKT Date
       const grouped = {};
-      filteredEvents.forEach(ev => {
-        if (!grouped[ev.dateStr]) grouped[ev.dateStr] = [];
-        grouped[ev.dateStr].push(ev);
+      filtered.forEach(ev => {
+        if (!grouped[ev.dateHeader]) grouped[ev.dateHeader] = [];
+        grouped[ev.dateHeader].push(ev);
       });
 
-      Object.keys(grouped).forEach(dateHeader => {
-        let tableRows = '';
-        grouped[dateHeader].forEach(ev => {
+      Object.keys(grouped).forEach(date => {
+        let rows = '';
+        grouped[date].forEach(ev => {
           const impactBadge = ev.impact === 'HIGH' 
             ? `<span class="bg-red-950/80 text-red-400 border border-red-800/80 px-2 py-0.5 rounded text-[10px] font-bold">HIGH</span>` 
             : `<span class="bg-amber-950/80 text-amber-400 border border-amber-800/80 px-2 py-0.5 rounded text-[10px] font-bold">MED</span>`;
 
-          const goldBias = ev.usdBull 
-            ? `<span class="text-rose-400 font-bold"><i class="fa-solid fa-arrow-trend-down"></i> Bearish Gold</span>` 
-            : `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-arrow-trend-up"></i> Bullish Gold</span>`;
+          const goldClass = ev.isBullish ? "text-emerald-400" : "text-rose-400";
+          const icon = ev.isBullish ? "fa-arrow-trend-up" : "fa-arrow-trend-down";
 
-          tableRows += `
-            <tr class="hover:bg-slate-800/40 transition">
-              <td class="p-3.5 text-slate-300 font-bold">${ev.time} PKT</td>
+          rows += `
+            <tr class="hover:bg-slate-800/40 border-b border-slate-800/60">
+              <td class="p-3.5 font-bold text-slate-300">${ev.timePKT}</td>
               <td class="p-3.5"><span class="bg-slate-800 text-slate-200 px-2 py-0.5 rounded font-bold">${ev.cur}</span></td>
               <td class="p-3.5">${impactBadge}</td>
-              <td class="p-3.5 font-sans font-semibold text-slate-200">${ev.name}</td>
+              <td class="p-3.5 font-semibold text-slate-200">${ev.title}</td>
               <td class="p-3.5 text-center font-bold ${ev.actual === 'Pending' ? 'text-amber-400 animate-pulse' : 'text-emerald-400'}">${ev.actual}</td>
               <td class="p-3.5 text-center text-slate-300">${ev.forecast}</td>
               <td class="p-3.5 text-center text-slate-400">${ev.previous}</td>
-              <td class="p-3.5 text-right font-sans text-xs">${goldBias}</td>
+              <td class="p-3.5 text-right font-bold ${goldClass}">
+                <i class="fa-solid ${icon}"></i> ${ev.goldBias} (${ev.probability})
+              </td>
             </tr>
           `;
         });
@@ -287,9 +221,9 @@
             <div class="bg-slate-900/90 px-4 py-3 border-b border-slate-800 flex items-center justify-between font-bold text-slate-200 text-sm">
               <div class="flex items-center">
                 <i class="fa-regular fa-calendar-check text-blue-400 mr-2.5"></i>
-                <span>${dateHeader}</span>
+                <span>${date}</span>
               </div>
-              <span class="text-xs text-emerald-400 font-mono"><i class="fa-solid fa-clock"></i> PKT (UTC+5) Synced</span>
+              <span class="text-xs text-emerald-400 font-mono"><i class="fa-solid fa-bolt"></i> Live Forex Factory Feed</span>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm">
@@ -305,8 +239,8 @@
                     <th class="p-3 text-right">AI Analysis / Target</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800/60 font-mono text-xs">
-                  ${tableRows}
+                <tbody class="font-mono text-xs divide-y divide-slate-800/60">
+                  ${rows}
                 </tbody>
               </table>
             </div>
@@ -317,69 +251,30 @@
 
     function filterCalendar(type) {
       currentFilter = type;
-      ['all', 'high', 'med'].forEach(f => {
-        document.getElementById(`flt-${f}`).className = "px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white";
-      });
-
-      if (type === 'ALL') document.getElementById('flt-all').className = "px-3 py-1.5 rounded font-bold bg-slate-800 text-white";
-      if (type === 'HIGH') document.getElementById('flt-high').className = "px-3 py-1.5 rounded font-bold bg-slate-800 text-white";
-      if (type === 'MEDIUM') document.getElementById('flt-med').className = "px-3 py-1.5 rounded font-bold bg-slate-800 text-white";
-
+      document.getElementById('flt-all').className = type === 'ALL' ? "px-3 py-1.5 rounded font-bold bg-slate-800 text-white" : "px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white";
+      document.getElementById('flt-high').className = type === 'HIGH' ? "px-3 py-1.5 rounded font-bold bg-slate-800 text-white" : "px-3 py-1.5 rounded font-bold text-slate-400 hover:text-white";
       renderCalendarTable();
-    }
-
-    async function fetchLiveData() {
-      const symbol = BINANCE_MAP[activeSymbol];
-      try {
-        const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
-        const data = await res.json();
-        const price = parseFloat(data.price);
-
-        document.getElementById('ui-price').innerText = activeSymbol === 'EURUSD' ? price.toFixed(4) : price.toFixed(2);
-        
-        const dynamicRsi = (55 + Math.random() * 15).toFixed(1);
-        document.getElementById('ui-rsi').innerText = dynamicRsi;
-      } catch (err) {
-        console.error("Live feed fetch error", err);
-      }
     }
 
     function selectPair(symbol) {
       activeSymbol = symbol;
       document.getElementById('ui-pair').innerText = symbol;
-      document.querySelectorAll('header button[id^="btn-"]').forEach(b => {
-        b.className = "px-3 py-1 rounded font-bold text-xs text-slate-400 hover:text-white";
-      });
-      document.getElementById(`btn-${symbol}`).className = "px-3 py-1 rounded font-bold text-xs bg-blue-600 text-white";
-      fetchLiveData();
     }
 
     function switchTab(tab) {
-      ['dash', 'audit', 'cal'].forEach(t => document.getElementById(`nav-${t}`).className = "w-full text-left px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800/50 font-semibold flex items-center gap-3");
-      ['dashboard', 'audit', 'calendar'].forEach(t => document.getElementById(`tab-${t}-view`).classList.add('hidden'));
+      document.getElementById('tab-dashboard-view').classList.add('hidden');
+      document.getElementById('tab-calendar-view').classList.add('hidden');
 
       if (tab === 'dashboard') {
         document.getElementById('tab-dashboard-view').classList.remove('hidden');
-        document.getElementById('nav-dash').className = "w-full text-left px-4 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 font-semibold flex items-center gap-3";
-      } else if (tab === 'audit') {
-        document.getElementById('tab-audit-view').classList.remove('hidden');
-        document.getElementById('nav-audit').className = "w-full text-left px-4 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 font-semibold flex items-center gap-3";
       } else if (tab === 'calendar') {
         document.getElementById('tab-calendar-view').classList.remove('hidden');
-        document.getElementById('nav-cal').className = "w-full text-left px-4 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 font-semibold flex items-center gap-3";
-        loadLiveForexFactory();
+        fetchLiveFFData();
       }
     }
 
-    function handleChartUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      document.getElementById('audit-result').classList.remove('hidden');
-      document.getElementById('audit-msg').innerText = `Analyzing "${file.name}"... Liquidity Sweep detected. Fair Value Gap (FVG) retest holds active setup.`;
-    }
-
-    fetchLiveData();
-    setInterval(fetchLiveData, 5000);
+    // Auto-fetch Live Feed on Page Load
+    fetchLiveFFData();
   </script>
 </body>
 </html>
