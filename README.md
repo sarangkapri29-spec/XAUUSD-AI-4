@@ -14,3 +14,4 @@ Vercel-ready app with:
 Set `OPENAI_API_KEY` in the Vercel project environment. Never commit a real `.env` file or API key.
 
 The app uses Yahoo Finance's XAUUSD=X chart endpoint for market data and OpenAI for the analysis layer.
+. 
