@@ -1,370 +1,214 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradeFX Terminal | Institutional AI Analyst</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#0b0e14',
-                        cardBg: '#131822',
-                        borderBg: '#1e2638',
-                        accentGreen: '#00e676',
-                        accentRed: '#ff5252',
-                        accentBlue: '#29b6f6'
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeFX Terminal | Institutional AI Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #0B0E14; color: #E2E8F0; font-family: 'Inter', sans-serif; }
+    .glass-card { background: rgba(18, 24, 38, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border-radius: 12px; }
+    .active-pair { background: #3B82F6 !important; color: white !important; font-weight: 600; }
+  </style>
 </head>
-<body class="bg-darkBg text-slate-200 font-sans antialiased flex h-screen overflow-hidden">
+<body class="min-h-screen flex flex-col md:flex-row">
 
-    <!-- Sidebar Navigation -->
-    <aside class="w-64 bg-cardBg border-r border-borderBg flex flex-col justify-between hidden md:flex">
-        <div>
-            <div class="p-5 flex items-center gap-3 border-b border-borderBg">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-accentBlue to-accentGreen flex items-center justify-center font-bold text-darkBg">TF</div>
-                <span class="font-bold text-lg tracking-wide text-white">TradeFX <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">ELITE</span></span>
-            </div>
-            <nav class="p-4 space-y-1.5 text-sm font-medium">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-accentBlue/10 text-accentBlue font-semibold border border-accentBlue/20">
-                    <i class="fa-solid fa-chart-line"></i> Dashboard
-                </button>
-                <button onclick="switchTab('matrix')" id="nav-matrix" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
-                    <i class="fa-solid fa-list-check"></i> Live Bias Matrix
-                </button>
-                <button onclick="toggleAuditModal(true)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
-                    <i class="fa-solid fa-camera text-emerald-400"></i> AI Trade Audit
-                </button>
-                <button onclick="switchTab('news')" id="nav-news" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
-                    <i class="fa-solid fa-newspaper text-rose-400"></i> High Impact News
-                </button>
-            </nav>
-        </div>
-        <div class="p-4 border-t border-borderBg">
-            <div class="flex items-center gap-3 text-xs text-slate-400">
-                <div class="w-2.5 h-2.5 rounded-full bg-accentGreen animate-pulse"></div>
-                <span>Gemini 2.0 Engine Live</span>
-            </div>
-        </div>
-    </aside>
+  <!-- Sidebar -->
+  <aside class="w-full md:w-64 bg-[#0F1522] border-r border-slate-800 p-5 flex flex-col justify-between">
+    <div>
+      <div class="flex items-center gap-3 mb-8">
+        <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-xl">TF</div>
+        <h1 class="text-xl font-bold tracking-wide">TradeFX <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">ELITE</span></h1>
+      </div>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col overflow-y-auto">
-        <header class="bg-cardBg border-b border-borderBg p-4 flex justify-between items-center sticky top-0 z-10">
-            <div class="flex items-center gap-2">
-                <span class="text-slate-400 text-sm">Active Pair:</span>
-                <div class="flex gap-2">
-                    <button onclick="switchSymbol('XAUUSD')" id="btn-XAUUSD" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-accentBlue text-darkBg">XAUUSD</button>
-                    <button onclick="switchSymbol('EURUSD')" id="btn-EURUSD" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">EURUSD</button>
-                    <button onclick="switchSymbol('NASDAQ')" id="btn-NASDAQ" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">NASDAQ</button>
-                    <button onclick="switchSymbol('US30')" id="btn-US30" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">US30</button>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <button onclick="toggleAuditModal(true)" class="bg-cardBg border border-borderBg text-slate-200 font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-borderBg transition flex items-center gap-2">
-                    <i class="fa-solid fa-camera text-accentBlue"></i> Audit Screenshot
-                </button>
-                <button onclick="runAnalysis()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs px-4 py-2 rounded-lg hover:opacity-90 transition flex items-center gap-2">
-                    <i class="fa-solid fa-arrows-rotate"></i> Analyze Live
-                </button>
-            </div>
-        </header>
-
-        <div class="p-6 space-y-6 max-w-7xl mx-auto w-full">
-            
-            <!-- Key Metrics Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
-                    <div class="text-xs font-semibold text-slate-400 uppercase">Live Price</div>
-                    <div id="ui-live-price" class="text-2xl font-extrabold text-white mt-1">Fetching...</div>
-                    <div class="text-[10px] text-emerald-400 mt-1"><i class="fa-solid fa-wifi"></i> Real-time Feed</div>
-                </div>
-                <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
-                    <div class="text-xs font-semibold text-slate-400 uppercase">Institutional Bias</div>
-                    <div id="ui-bias" class="text-2xl font-extrabold text-accentGreen mt-1">ANALYZING</div>
-                    <div id="ui-confidence" class="text-[10px] text-slate-400 mt-1">Confidence Score: --%</div>
-                </div>
-                <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
-                    <div class="text-xs font-semibold text-slate-400 uppercase">Entry Gate Status</div>
-                    <div id="ui-entry-gate" class="text-2xl font-extrabold text-amber-400 mt-1">WAIT</div>
-                    <div class="text-[10px] text-slate-400 mt-1">Awaiting 15M Retest</div>
-                </div>
-                <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
-                    <div class="text-xs font-semibold text-slate-400 uppercase">RSI Momentum</div>
-                    <div id="ui-rsi" class="text-2xl font-extrabold text-accentBlue mt-1">--.-</div>
-                    <div class="text-[10px] text-slate-400 mt-1">1H Timeframe Oscillator</div>
-                </div>
-            </div>
-
-            <!-- Tab 1: Dashboard View -->
-            <div id="tab-dashboard-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Timeframe Matrix Box -->
-                <div class="bg-cardBg p-5 rounded-xl border border-borderBg flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 border-b border-borderBg pb-3 mb-4 flex items-center justify-between">
-                            <span>Timeframe Alignment Matrix</span>
-                            <i class="fa-solid fa-layer-group text-slate-500"></i>
-                        </h3>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-1">
-                                    <span class="text-slate-400">1D Daily Structure</span>
-                                    <span id="d1-bias-text" class="text-emerald-400">Bullish (85%)</span>
-                                </div>
-                                <div class="w-full bg-borderBg h-2 rounded-full overflow-hidden">
-                                    <div id="d1-bar" class="bg-accentGreen h-full rounded-full transition-all duration-500" style="width: 85%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-1">
-                                    <span class="text-slate-400">4H Intermediate Trend</span>
-                                    <span id="h4-bias-text" class="text-emerald-400">Bullish (78%)</span>
-                                </div>
-                                <div class="w-full bg-borderBg h-2 rounded-full overflow-hidden">
-                                    <div id="h4-bar" class="bg-accentGreen h-full rounded-full transition-all duration-500" style="width: 78%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-1">
-                                    <span class="text-slate-400">1H Local Execution</span>
-                                    <span id="h1-bias-text" class="text-amber-400">Pullback (45%)</span>
-                                </div>
-                                <div class="w-full bg-borderBg h-2 rounded-full overflow-hidden">
-                                    <div id="h1-bar" class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 45%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-6 pt-4 border-t border-borderBg text-xs text-slate-400">
-                        <i class="fa-solid fa-circle-info text-accentBlue mr-1"></i>
-                        Confluence rule: Entry triggers when 1D, 4H, and 1H align above 70%.
-                    </div>
-                </div>
-
-                <!-- Technical Reasoning Engine -->
-                <div class="lg:col-span-2 bg-cardBg p-5 rounded-xl border border-borderBg">
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 border-b border-borderBg pb-3 mb-4 flex items-center justify-between">
-                        <span>Gemini Technical Reasoning Engine</span>
-                        <i class="fa-solid fa-brain text-accentBlue"></i>
-                    </h3>
-                    <div id="ui-reasoning" class="text-slate-300 text-sm leading-relaxed min-h-[140px] bg-darkBg/50 p-4 rounded-lg border border-borderBg">
-                        Click "Analyze Live" button above to pull institutional ICT/SMC structure for the selected market asset.
-                    </div>
-                    
-                    <!-- Live High Impact News Quick Preview Bar -->
-                    <div class="mt-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg flex items-center justify-between text-xs text-rose-300">
-                        <div class="flex items-center gap-2">
-                            <span class="px-2 py-0.5 bg-rose-500 text-white rounded font-bold uppercase text-[10px]">News Alert</span>
-                            <span>USD CPI Inflation Data at 18:30 PKT (High Impact Risk)</span>
-                        </div>
-                        <button onclick="switchTab('news')" class="underline hover:text-white font-semibold">View Radar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tab 2: High Impact News Radar Section -->
-            <div id="tab-news-view" class="hidden space-y-4">
-                <div class="bg-cardBg p-5 rounded-xl border border-borderBg">
-                    <div class="flex justify-between items-center border-b border-borderBg pb-3 mb-4">
-                        <h3 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-newspaper text-rose-400"></i> High-Impact News Risk Radar (NFP / CPI / FOMC)
-                        </h3>
-                        <span class="text-xs text-slate-400">Live Economic Calendar Event Tracking</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="news-list-container">
-                        <div class="p-4 bg-darkBg border border-rose-500/30 rounded-xl space-y-2">
-                            <div class="flex justify-between items-center">
-                                <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-xs font-bold">18:30 PKT - USD</span>
-                                <span class="text-xs bg-rose-600 text-white font-bold px-2 py-0.5 rounded">HIGH IMPACT</span>
-                            </div>
-                            <h4 class="font-bold text-white text-sm">CPI Inflation Data (YoY)</h4>
-                            <div class="text-xs text-slate-400 flex gap-4">
-                                <span>Forecast: <strong>3.1%</strong></span>
-                                <span>Previous: <strong>3.2%</strong></span>
-                            </div>
-                            <p class="text-xs text-amber-400 bg-amber-500/10 p-2 rounded border border-amber-500/20">
-                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> High Volatility Expected. Avoid tight SL placement 15 mins before release.
-                            </p>
-                        </div>
-
-                        <div class="p-4 bg-darkBg border border-rose-500/30 rounded-xl space-y-2">
-                            <div class="flex justify-between items-center">
-                                <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-xs font-bold">21:00 PKT - USD</span>
-                                <span class="text-xs bg-rose-600 text-white font-bold px-2 py-0.5 rounded">HIGH IMPACT</span>
-                            </div>
-                            <h4 class="font-bold text-white text-sm">FOMC Meeting Minutes</h4>
-                            <div class="text-xs text-slate-400 flex gap-4">
-                                <span>Forecast: <strong>Neutral</strong></span>
-                                <span>Previous: <strong>Hawkish</strong></span>
-                            </div>
-                            <p class="text-xs text-amber-400 bg-amber-500/10 p-2 rounded border border-amber-500/20">
-                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Potential Liquidity Sweep across Gold & Forex pairs.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Modal: Trade Screenshot AI Audit -->
-    <div id="audit-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-cardBg border border-borderBg w-full max-w-xl rounded-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-borderBg pb-3">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-camera text-accentBlue"></i> AI Trade Screenshot Audit
-                </h3>
-                <button onclick="toggleAuditModal(false)" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-
-            <div class="border-2 border-dashed border-borderBg rounded-xl p-6 text-center bg-darkBg/40 hover:border-accentBlue/50 transition">
-                <input type="file" id="chart-file-input" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
-                <label for="chart-file-input" class="cursor-pointer space-y-2 block">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-accentBlue"></i>
-                    <div id="upload-label-text" class="text-sm font-semibold text-slate-300">Click to Select Chart Screenshot</div>
-                    <div class="text-xs text-slate-500">Supports PNG, JPG (TradingView / MT4 / MT5 Screenshots)</div>
-                </label>
-            </div>
-
-            <div id="audit-result-box" class="hidden bg-darkBg p-4 rounded-xl border border-borderBg space-y-2 text-xs">
-                <div class="flex justify-between items-center border-b border-borderBg/50 pb-2">
-                    <span class="font-bold text-slate-400">Execution Grade:</span>
-                    <span id="audit-grade" class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded font-black text-sm">--</span>
-                </div>
-                <div class="text-slate-300"><strong>Verdict:</strong> <span id="audit-verdict">--</span></div>
-                <div class="text-slate-300"><strong>Entry Quality:</strong> <span id="audit-quality">--</span></div>
-                <div class="text-rose-400"><strong>Key Mistake:</strong> <span id="audit-mistake">--</span></div>
-                <div class="text-emerald-400"><strong>What Went Well:</strong> <span id="audit-good">--</span></div>
-                <div class="text-accentBlue"><strong>Actionable Fix:</strong> <span id="audit-fix">--</span></div>
-            </div>
-
-            <button id="btn-submit-audit" onclick="submitAudit()" class="w-full bg-accentBlue text-darkBg font-bold py-2.5 rounded-xl hover:opacity-90 transition">
-                Generate AI Audit Report
-            </button>
-        </div>
+      <nav class="space-y-2">
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium bg-blue-600/10 text-blue-400 border border-blue-500/30">
+          <i class="fa-solid font-bold fa-chart-line"></i> Dashboard
+        </button>
+        <button onclick="switchTab('audit')" id="tab-audit" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium text-slate-400 hover:bg-slate-800/50">
+          <i class="fa-solid fa-microscope"></i> AI Trade Audit
+        </button>
+        <button onclick="switchTab('calendar')" id="tab-calendar" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-sm font-medium text-slate-400 hover:bg-slate-800/50">
+          <i class="fa-solid fa-calendar-days"></i> Economic Calendar
+        </button>
+      </nav>
     </div>
 
-    <script>
-        let currentSymbol = 'XAUUSD';
-        let selectedFileBase64 = null;
-        let selectedFileType = null;
+    <div class="text-xs text-slate-500 flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Gemini 2.0 Engine Live
+    </div>
+  </aside>
 
-        function switchTab(tab) {
-            document.getElementById('tab-dashboard-view').classList.add('hidden');
-            document.getElementById('tab-news-view').classList.add('hidden');
+  <!-- Main Content -->
+  <main class="flex-1 p-6 overflow-y-auto">
+    
+    <!-- Top Bar / Active Pair Toggle -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-slate-800 pb-4">
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-slate-400 font-semibold uppercase">Active Pair:</span>
+        <div class="flex gap-2">
+          <button id="btn-XAUUSD" onclick="changePair('XAUUSD')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 active-pair">XAUUSD</button>
+          <button id="btn-EURUSD" onclick="changePair('EURUSD')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">EURUSD</button>
+          <button id="btn-NASDAQ" onclick="changePair('NASDAQ')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">NASDAQ</button>
+          <button id="btn-US30" onclick="changePair('US30')" class="pair-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">US30</button>
+        </div>
+      </div>
 
-            if (tab === 'dashboard' || tab === 'matrix') {
-                document.getElementById('tab-dashboard-view').classList.remove('hidden');
-            } else if (tab === 'news') {
-                document.getElementById('tab-news-view').classList.remove('hidden');
-            }
-        }
+      <div class="flex items-center gap-3">
+        <input type="file" id="auditInput" accept="image/*" class="hidden" onchange="processScreenshot(event)">
+        <button onclick="document.getElementById('auditInput').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-semibold border border-slate-700 flex items-center gap-2">
+          <i class="fa-solid fa-camera"></i> Audit Screenshot
+        </button>
+        <button onclick="refreshAnalysis()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-rotate"></i> Analyze Live
+        </button>
+      </div>
+    </header>
 
-        function switchSymbol(symbol) {
-            currentSymbol = symbol;
-            document.querySelectorAll('.symbol-btn').forEach(btn => {
-                btn.className = 'symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700';
-            });
-            document.getElementById(`btn-${symbol}`).className = 'symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-accentBlue text-darkBg';
-            runAnalysis();
-        }
+    <!-- TAB 1: DASHBOARD -->
+    <section id="view-dashboard" class="space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card p-4">
+          <p class="text-xs text-slate-400 font-medium">LIVE PRICE (<span id="pair-label">XAUUSD</span>)</p>
+          <p class="text-2xl font-extrabold mt-1 text-white" id="live-price">---.--</p>
+          <p class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-wifi"></i> Real-time Feed</p>
+        </div>
 
-        async function runAnalysis() {
-            document.getElementById('ui-reasoning').innerText = 'Fetching live feeds and generating multi-timeframe analysis...';
-            try {
-                const res = await fetch('/api/analyze', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ symbol: currentSymbol })
-                });
-                const data = await res.json();
+        <div class="glass-card p-4">
+          <p class="text-xs text-slate-400 font-medium">INSTITUTIONAL BIAS</p>
+          <p class="text-2xl font-extrabold mt-1 text-emerald-400" id="bias-label">BULLISH</p>
+          <p class="text-[10px] text-slate-400 mt-1" id="bias-confidence">Confidence Score: 85%</p>
+        </div>
 
-                document.getElementById('ui-live-price').innerText = data.price || data.currentPrice || '--';
-                document.getElementById('ui-bias').innerText = data.signal || 'NEUTRAL';
-                document.getElementById('ui-confidence').innerText = `Confidence Score: ${data.confidence || 75}%`;
-                document.getElementById('ui-entry-gate').innerText = data.entry_gate || 'WAIT';
-                document.getElementById('ui-rsi').innerText = data.rsi || '48.5';
-                document.getElementById('ui-reasoning').innerText = data.reasoning || data.analysis || 'Analysis updated.';
+        <div class="glass-card p-4">
+          <p class="text-xs text-slate-400 font-medium">ENTRY GATE STATUS</p>
+          <p class="text-2xl font-extrabold mt-1 text-amber-400" id="gate-status">READY</p>
+          <p class="text-[10px] text-slate-400 mt-1" id="gate-subtext">Awaiting Confluence</p>
+        </div>
 
-                const d1Score = data.d1_score || 80;
-                const h4Score = data.h4_score || 75;
-                const h1Score = data.h1_score || 45;
+        <div class="glass-card p-4">
+          <p class="text-xs text-slate-400 font-medium">RSI MOMENTUM</p>
+          <p class="text-2xl font-extrabold mt-1 text-blue-400" id="rsi-val">56.2</p>
+          <p class="text-[10px] text-slate-400 mt-1">1H Timeframe Oscillator</p>
+        </div>
+      </div>
 
-                document.getElementById('d1-bias-text').innerText = `${data.d1_bias || 'Bullish'} (${d1Score}%)`;
-                document.getElementById('d1-bar').style.width = `${d1Score}%`;
+      <!-- Timeframe Matrix & AI Technical Reasoning -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card p-5">
+          <h2 class="text-sm font-semibold tracking-wider text-slate-300 uppercase mb-4 flex items-center justify-between">
+            Timeframe Alignment Matrix <i class="fa-solid fa-layer-group text-slate-500"></i>
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span class="text-slate-400">1D Daily Structure</span>
+                <span class="text-emerald-400" id="tf-1d-text">Bullish (85%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-2">
+                <div class="bg-emerald-500 h-2 rounded-full" id="tf-1d-bar" style="width: 85%"></div>
+              </div>
+            </div>
 
-                document.getElementById('h4-bias-text').innerText = `${data.h4_bias || 'Bullish'} (${h4Score}%)`;
-                document.getElementById('h4-bar').style.width = `${h4Score}%`;
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span class="text-slate-400">4H Intermediate Trend</span>
+                <span class="text-emerald-400" id="tf-4h-text">Bullish (78%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-2">
+                <div class="bg-emerald-500 h-2 rounded-full" id="tf-4h-bar" style="width: 78%"></div>
+              </div>
+            </div>
 
-                document.getElementById('h1-bias-text').innerText = `${data.h1_bias || 'Bearish'} (${h1Score}%)`;
-                document.getElementById('h1-bar').style.width = `${h1Score}%`;
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span class="text-slate-400">1H Local Execution</span>
+                <span class="text-amber-400" id="tf-1h-text">Bullish (72%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-2">
+                <div class="bg-amber-500 h-2 rounded-full" id="tf-1h-bar" style="width: 72%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            } catch (err) {
-                document.getElementById('ui-reasoning').innerText = 'Error loading data. Check Vercel API logs.';
-            }
-        }
+        <div class="glass-card p-5 flex flex-col justify-between">
+          <div>
+            <h2 class="text-sm font-semibold tracking-wider text-slate-300 uppercase mb-3 flex items-center justify-between">
+              Gemini Technical Reasoning Engine <i class="fa-solid fa-brain text-blue-400"></i>
+            </h2>
+            <div id="ai-reasoning" class="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-lg border border-slate-800/80 min-h-[110px]">
+              Fetching pair live analysis...
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        function toggleAuditModal(show) {
-            const modal = document.getElementById('audit-modal');
-            if (show) modal.classList.remove('hidden');
-            else modal.classList.add('hidden');
-        }
+    <!-- TAB 2: AI TRADE AUDIT REPORT -->
+    <section id="view-audit" class="hidden space-y-6">
+      <div class="glass-card p-6">
+        <h2 class="text-lg font-bold text-white mb-2">AI Chart & Trade Setup Audit</h2>
+        <p class="text-xs text-slate-400 mb-6">Upload your TradingView or MT4/MT5 chart screenshot for instant ICT & Price Action feedback.</p>
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                document.getElementById('upload-label-text').innerText = `Selected: ${file.name}`;
-                selectedFileType = file.type;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedFileBase64 = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+        <div id="audit-preview-container" class="hidden mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-xs font-semibold text-slate-400 mb-2">Uploaded Chart Screenshot:</p>
+            <img id="audit-img-preview" class="w-full rounded-lg border border-slate-700 object-cover max-h-[350px]">
+          </div>
+          <div class="glass-card p-5 bg-slate-900/90 border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-xs font-bold uppercase text-slate-400">Audit Summary Report</span>
+              <span id="audit-score-badge" class="px-2.5 py-1 rounded text-xs font-extrabold bg-blue-600/30 text-blue-400 border border-blue-500/40">GRADE A</span>
+            </div>
+            <div id="audit-report-content" class="text-xs text-slate-300 space-y-3 leading-relaxed">
+              Analyzing chart patterns, entry gates, and liquidity pools...
+            </div>
+          </div>
+        </div>
 
-        async function submitAudit() {
-            if (!selectedFileBase64) return alert('Please select a chart screenshot image first.');
+        <div onclick="document.getElementById('auditInput').click()" class="border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-xl p-10 text-center cursor-pointer transition-colors bg-slate-900/30">
+          <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-400 mb-2"></i>
+          <p class="text-sm font-semibold text-slate-200">Click to upload chart screenshot</p>
+          <p class="text-xs text-slate-500 mt-1">Supports PNG, JPG, JPEG</p>
+        </div>
+      </div>
+    </section>
 
-            const btn = document.getElementById('btn-submit-audit');
-            btn.innerText = 'Analyzing Chart Screenshot...';
-            btn.disabled = true;
+    <!-- TAB 3: ECONOMIC CALENDAR (FOREX FACTORY STYLE) -->
+    <section id="view-calendar" class="hidden space-y-6">
+      <div class="glass-card p-6">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white">Economic News Calendar</h2>
+            <p class="text-xs text-slate-400">High Impact Market Events (Pakistan Standard Time - PKT)</p>
+          </div>
+          <span class="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded border border-red-500/30 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> High Risk Radar</span>
+        </div>
 
-            try {
-                const res = await fetch('/api/audit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ imageBase64: selectedFileBase64, mimeType: selectedFileType })
-                });
-                const responseData = await res.json();
-                const audit = responseData.audit || {};
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="p-3">Date / Time (PKT)</th>
+                <th class="p-3">Currency</th>
+                <th class="p-3">Impact</th>
+                <th class="p-3">Event Name</th>
+                <th class="p-3">Forecast</th>
+                <th class="p-3">Previous</th>
+              </tr>
+            </thead>
+            <tbody id="economic-calendar-body" class="divide-y divide-slate-800/50 text-slate-300">
+              <!-- Calendar Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
-                document.getElementById('audit-result-box').classList.remove('hidden');
-                document.getElementById('audit-grade').innerText = audit.grade || 'B+';
-                document.getElementById('audit-verdict').innerText = audit.trade_verdict || 'Analysis Complete';
-                document.getElementById('audit-quality').innerText = audit.entry_quality || '--';
-                document.getElementById('audit-mistake').innerText = audit.key_mistake || 'None detected.';
-                document.getElementById('audit-good').innerText = audit.what_went_well || '--';
-                document.getElementById('audit-fix').innerText = audit.actionable_fix || '--';
-            } catch (err) {
-                alert('Error running screenshot audit.');
-            } finally {
-                btn.innerText = 'Generate AI Audit Report';
-                btn.disabled = false;
-            }
-        }
+  </main>
 
-        window.onload = runAnalysis;
-    </script>
+  <script src="script.js"></script>
 </body>
 </html>
