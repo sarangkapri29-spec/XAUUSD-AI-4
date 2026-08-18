@@ -13,12 +13,12 @@ async function fetchLivePairData() {
 
   try {
     const res = await fetch(`/api/analyze?symbol=${activeSymbol}`);
-    if (!res.ok) throw new Error("API Network error");
+    if (!res.ok) throw new Error("API Network Error");
     const d = await res.json();
 
     if (document.getElementById('ui-pair')) document.getElementById('ui-pair').innerText = d.symbol || activeSymbol;
     if (document.getElementById('ui-price')) document.getElementById('ui-price').innerText = d.price || "2504.10";
-    
+
     const biasElem = document.getElementById('ui-bias');
     if (biasElem) {
       const biasVal = d.bias || "BULLISH";
@@ -47,8 +47,7 @@ async function fetchLivePairData() {
       document.getElementById('ui-reasoning').innerText = d.reasoning || "Price action holds clean structural alignment above Asia Session Lows. H4 liquidity sweep confirmed with strong institutional buying volume entering FVG zone.";
     }
   } catch (err) {
-    console.error("Fetch Error:", err);
-    // Fallback UI population so it never gets stuck on Loading
+    console.error("Fetch Fallback Triggered:", err);
     if (document.getElementById('ui-price')) document.getElementById('ui-price').innerText = activeSymbol === "XAUUSD" ? "2504.50" : "1.0890";
     if (document.getElementById('ui-bias')) document.getElementById('ui-bias').innerText = "BULLISH";
     if (document.getElementById('ui-confidence')) document.getElementById('ui-confidence').innerText = "Confidence: 85%";
@@ -96,7 +95,6 @@ function switchTab(tab) {
   if (tab === 'audit' && audit) {
     audit.classList.remove('hidden');
     if (navAudit) navAudit.classList.add('active');
-    renderAuditUI();
   }
   if (tab === 'calendar' && cal) {
     cal.classList.remove('hidden');
@@ -106,63 +104,19 @@ function switchTab(tab) {
 }
 
 function renderCalendar() {
-  const calView = document.getElementById('tab-calendar-view');
-  if (!calView) return;
+  const tbody = document.getElementById('calendar-table-body');
+  if (!tbody) return;
 
-  calView.innerHTML = `
+  tbody.innerHTML = NEWS_EVENTS.map(n => `
     
-      Economic News Calendar (PKT)
-      
-        
-            ${NEWS_EVENTS.map(n => `
-              
-            `).join('')}
-          
-          
-            
-              Date / Time (PKT)
-              Currency
-              Impact
-              Event
-              Forecast
-              Previous
-            
-          
-          
-                ${n.date} | ${n.time}
-                ${n.currency}
-                ${n.impact}
-                ${n.event}
-                ${n.forecast}
-                ${n.previous}
-              
-        
-      
+      ${n.date} | ${n.time}
+      ${n.currency}
+      ${n.impact}
+      ${n.event}
+      ${n.forecast}
+      ${n.previous}
     
-  `;
-}
-
-function renderAuditUI() {
-  const auditView = document.getElementById('tab-audit-view');
-  if (!auditView) return;
-
-  auditView.innerHTML = `
-    
-      AI Trade Setup Audit
-      Upload chart screenshot for instant market structure & liquidity sweep analysis.
-      
-      
-        Click to upload Chart Screenshot
-        Supports PNG, JPG, WEBP
-        
-      
-
-      
-        ✓ Audit Scan Complete:
-        
-      
-    
-  `;
+  `).join('');
 }
 
 function handleChartUpload(e) {
