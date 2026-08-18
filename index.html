@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TradeFX Terminal | Institutional AI Analyst</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -27,7 +26,7 @@
 </head>
 <body class="bg-darkBg text-slate-200 font-sans antialiased flex h-screen overflow-hidden">
 
-    <!-- Left Sidebar -->
+    <!-- Sidebar Navigation -->
     <aside class="w-64 bg-cardBg border-r border-borderBg flex flex-col justify-between hidden md:flex">
         <div>
             <div class="p-5 flex items-center gap-3 border-b border-borderBg">
@@ -35,18 +34,18 @@
                 <span class="font-bold text-lg tracking-wide text-white">TradeFX <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">ELITE</span></span>
             </div>
             <nav class="p-4 space-y-1.5 text-sm font-medium">
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-accentBlue/10 text-accentBlue font-semibold border border-accentBlue/20">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-accentBlue/10 text-accentBlue font-semibold border border-accentBlue/20">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
-                </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
+                </button>
+                <button onclick="switchTab('matrix')" id="nav-matrix" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
                     <i class="fa-solid fa-list-check"></i> Live Bias Matrix
-                </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
-                    <i class="fa-solid fa-camera"></i> AI Trade Audit
-                </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
-                    <i class="fa-solid fa-bolt"></i> High Impact News
-                </a>
+                </button>
+                <button onclick="toggleAuditModal(true)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
+                    <i class="fa-solid fa-camera text-emerald-400"></i> AI Trade Audit
+                </button>
+                <button onclick="switchTab('news')" id="nav-news" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-borderBg transition">
+                    <i class="fa-solid fa-newspaper text-rose-400"></i> High Impact News
+                </button>
             </nav>
         </div>
         <div class="p-4 border-t border-borderBg">
@@ -59,7 +58,6 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col overflow-y-auto">
-        <!-- Top Navigation -->
         <header class="bg-cardBg border-b border-borderBg p-4 flex justify-between items-center sticky top-0 z-10">
             <div class="flex items-center gap-2">
                 <span class="text-slate-400 text-sm">Active Pair:</span>
@@ -70,13 +68,19 @@
                     <button onclick="switchSymbol('US30')" id="btn-US30" class="symbol-btn px-3 py-1 rounded-md text-xs font-bold bg-borderBg text-slate-300 hover:bg-slate-700">US30</button>
                 </div>
             </div>
-            <button onclick="runAnalysis()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs px-4 py-2 rounded-lg hover:opacity-90 transition flex items-center gap-2">
-                <i class="fa-solid fa-arrows-rotate"></i> Analyze Live
-            </button>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleAuditModal(true)" class="bg-cardBg border border-borderBg text-slate-200 font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-borderBg transition flex items-center gap-2">
+                    <i class="fa-solid fa-camera text-accentBlue"></i> Audit Screenshot
+                </button>
+                <button onclick="runAnalysis()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs px-4 py-2 rounded-lg hover:opacity-90 transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrows-rotate"></i> Analyze Live
+                </button>
+            </div>
         </header>
 
         <div class="p-6 space-y-6 max-w-7xl mx-auto w-full">
-            <!-- KPI Metric Cards Bar -->
+            
+            <!-- Key Metrics Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-cardBg p-4 rounded-xl border border-borderBg">
                     <div class="text-xs font-semibold text-slate-400 uppercase">Live Price</div>
@@ -100,19 +104,16 @@
                 </div>
             </div>
 
-            <!-- Central Grid: Multi-Timeframe Matrix + AI Reasoning -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                <!-- Multi-Timeframe Alignment (1D / 4H / 1H) -->
+            <!-- Tab 1: Dashboard View -->
+            <div id="tab-dashboard-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Timeframe Matrix Box -->
                 <div class="bg-cardBg p-5 rounded-xl border border-borderBg flex flex-col justify-between">
                     <div>
                         <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 border-b border-borderBg pb-3 mb-4 flex items-center justify-between">
                             <span>Timeframe Alignment Matrix</span>
                             <i class="fa-solid fa-layer-group text-slate-500"></i>
                         </h3>
-                        
                         <div class="space-y-4">
-                            <!-- 1D Bar -->
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
                                     <span class="text-slate-400">1D Daily Structure</span>
@@ -122,8 +123,6 @@
                                     <div id="d1-bar" class="bg-accentGreen h-full rounded-full transition-all duration-500" style="width: 85%"></div>
                                 </div>
                             </div>
-
-                            <!-- 4H Bar -->
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
                                     <span class="text-slate-400">4H Intermediate Trend</span>
@@ -133,8 +132,6 @@
                                     <div id="h4-bar" class="bg-accentGreen h-full rounded-full transition-all duration-500" style="width: 78%"></div>
                                 </div>
                             </div>
-
-                            <!-- 1H Bar -->
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
                                     <span class="text-slate-400">1H Local Execution</span>
@@ -146,37 +143,132 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="mt-6 pt-4 border-t border-borderBg text-xs text-slate-400">
                         <i class="fa-solid fa-circle-info text-accentBlue mr-1"></i>
-                        Confluence rule: Full entry setup triggers when 1D, 4H, and 1H align above 70%.
+                        Confluence rule: Entry triggers when 1D, 4H, and 1H align above 70%.
                     </div>
                 </div>
 
-                <!-- AI Institutional Analysis Panel -->
+                <!-- Technical Reasoning Engine -->
                 <div class="lg:col-span-2 bg-cardBg p-5 rounded-xl border border-borderBg">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 border-b border-borderBg pb-3 mb-4 flex items-center justify-between">
                         <span>Gemini Technical Reasoning Engine</span>
                         <i class="fa-solid fa-brain text-accentBlue"></i>
                     </h3>
-                    
                     <div id="ui-reasoning" class="text-slate-300 text-sm leading-relaxed min-h-[140px] bg-darkBg/50 p-4 rounded-lg border border-borderBg">
                         Click "Analyze Live" button above to pull institutional ICT/SMC structure for the selected market asset.
                     </div>
-
-                    <!-- News Ticker -->
-                    <div class="mt-4 bg-darkBg/80 p-2.5 rounded-lg border border-borderBg flex items-center gap-3 overflow-hidden text-xs">
-                        <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded font-bold uppercase">NEWS</span>
-                        <marquee class="text-slate-400">NFP & CPI High Volatility Warning: Keep risk strictly below 1% during US Session Open.</marquee>
+                    
+                    <!-- Live High Impact News Quick Preview Bar -->
+                    <div class="mt-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg flex items-center justify-between text-xs text-rose-300">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 bg-rose-500 text-white rounded font-bold uppercase text-[10px]">News Alert</span>
+                            <span>USD CPI Inflation Data at 18:30 PKT (High Impact Risk)</span>
+                        </div>
+                        <button onclick="switchTab('news')" class="underline hover:text-white font-semibold">View Radar</button>
                     </div>
                 </div>
-
             </div>
+
+            <!-- Tab 2: High Impact News Radar Section -->
+            <div id="tab-news-view" class="hidden space-y-4">
+                <div class="bg-cardBg p-5 rounded-xl border border-borderBg">
+                    <div class="flex justify-between items-center border-b border-borderBg pb-3 mb-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-newspaper text-rose-400"></i> High-Impact News Risk Radar (NFP / CPI / FOMC)
+                        </h3>
+                        <span class="text-xs text-slate-400">Live Economic Calendar Event Tracking</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="news-list-container">
+                        <div class="p-4 bg-darkBg border border-rose-500/30 rounded-xl space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-xs font-bold">18:30 PKT - USD</span>
+                                <span class="text-xs bg-rose-600 text-white font-bold px-2 py-0.5 rounded">HIGH IMPACT</span>
+                            </div>
+                            <h4 class="font-bold text-white text-sm">CPI Inflation Data (YoY)</h4>
+                            <div class="text-xs text-slate-400 flex gap-4">
+                                <span>Forecast: <strong>3.1%</strong></span>
+                                <span>Previous: <strong>3.2%</strong></span>
+                            </div>
+                            <p class="text-xs text-amber-400 bg-amber-500/10 p-2 rounded border border-amber-500/20">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> High Volatility Expected. Avoid tight SL placement 15 mins before release.
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-darkBg border border-rose-500/30 rounded-xl space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-xs font-bold">21:00 PKT - USD</span>
+                                <span class="text-xs bg-rose-600 text-white font-bold px-2 py-0.5 rounded">HIGH IMPACT</span>
+                            </div>
+                            <h4 class="font-bold text-white text-sm">FOMC Meeting Minutes</h4>
+                            <div class="text-xs text-slate-400 flex gap-4">
+                                <span>Forecast: <strong>Neutral</strong></span>
+                                <span>Previous: <strong>Hawkish</strong></span>
+                            </div>
+                            <p class="text-xs text-amber-400 bg-amber-500/10 p-2 rounded border border-amber-500/20">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Potential Liquidity Sweep across Gold & Forex pairs.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
+    <!-- Modal: Trade Screenshot AI Audit -->
+    <div id="audit-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-cardBg border border-borderBg w-full max-w-xl rounded-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-borderBg pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-camera text-accentBlue"></i> AI Trade Screenshot Audit
+                </h3>
+                <button onclick="toggleAuditModal(false)" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div class="border-2 border-dashed border-borderBg rounded-xl p-6 text-center bg-darkBg/40 hover:border-accentBlue/50 transition">
+                <input type="file" id="chart-file-input" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+                <label for="chart-file-input" class="cursor-pointer space-y-2 block">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-accentBlue"></i>
+                    <div id="upload-label-text" class="text-sm font-semibold text-slate-300">Click to Select Chart Screenshot</div>
+                    <div class="text-xs text-slate-500">Supports PNG, JPG (TradingView / MT4 / MT5 Screenshots)</div>
+                </label>
+            </div>
+
+            <div id="audit-result-box" class="hidden bg-darkBg p-4 rounded-xl border border-borderBg space-y-2 text-xs">
+                <div class="flex justify-between items-center border-b border-borderBg/50 pb-2">
+                    <span class="font-bold text-slate-400">Execution Grade:</span>
+                    <span id="audit-grade" class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded font-black text-sm">--</span>
+                </div>
+                <div class="text-slate-300"><strong>Verdict:</strong> <span id="audit-verdict">--</span></div>
+                <div class="text-slate-300"><strong>Entry Quality:</strong> <span id="audit-quality">--</span></div>
+                <div class="text-rose-400"><strong>Key Mistake:</strong> <span id="audit-mistake">--</span></div>
+                <div class="text-emerald-400"><strong>What Went Well:</strong> <span id="audit-good">--</span></div>
+                <div class="text-accentBlue"><strong>Actionable Fix:</strong> <span id="audit-fix">--</span></div>
+            </div>
+
+            <button id="btn-submit-audit" onclick="submitAudit()" class="w-full bg-accentBlue text-darkBg font-bold py-2.5 rounded-xl hover:opacity-90 transition">
+                Generate AI Audit Report
+            </button>
+        </div>
+    </div>
+
     <script>
         let currentSymbol = 'XAUUSD';
+        let selectedFileBase64 = null;
+        let selectedFileType = null;
+
+        function switchTab(tab) {
+            document.getElementById('tab-dashboard-view').classList.add('hidden');
+            document.getElementById('tab-news-view').classList.add('hidden');
+
+            if (tab === 'dashboard' || tab === 'matrix') {
+                document.getElementById('tab-dashboard-view').classList.remove('hidden');
+            } else if (tab === 'news') {
+                document.getElementById('tab-news-view').classList.remove('hidden');
+            }
+        }
 
         function switchSymbol(symbol) {
             currentSymbol = symbol;
@@ -204,10 +296,9 @@
                 document.getElementById('ui-rsi').innerText = data.rsi || '48.5';
                 document.getElementById('ui-reasoning').innerText = data.reasoning || data.analysis || 'Analysis updated.';
 
-                // Structure updates
-                const d1Score = data.d1_score || data.structures?.d1?.score || 80;
-                const h4Score = data.h4_score || data.structures?.h4?.score || 75;
-                const h1Score = data.h1_score || data.structures?.h1?.score || 45;
+                const d1Score = data.d1_score || 80;
+                const h4Score = data.h4_score || 75;
+                const h1Score = data.h1_score || 45;
 
                 document.getElementById('d1-bias-text').innerText = `${data.d1_bias || 'Bullish'} (${d1Score}%)`;
                 document.getElementById('d1-bar').style.width = `${d1Score}%`;
@@ -219,11 +310,60 @@
                 document.getElementById('h1-bar').style.width = `${h1Score}%`;
 
             } catch (err) {
-                document.getElementById('ui-reasoning').innerText = 'Error loading data. Check console or Vercel logs.';
+                document.getElementById('ui-reasoning').innerText = 'Error loading data. Check Vercel API logs.';
             }
         }
 
-        // Auto run on load
+        function toggleAuditModal(show) {
+            const modal = document.getElementById('audit-modal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('upload-label-text').innerText = `Selected: ${file.name}`;
+                selectedFileType = file.type;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedFileBase64 = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function submitAudit() {
+            if (!selectedFileBase64) return alert('Please select a chart screenshot image first.');
+
+            const btn = document.getElementById('btn-submit-audit');
+            btn.innerText = 'Analyzing Chart Screenshot...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/audit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageBase64: selectedFileBase64, mimeType: selectedFileType })
+                });
+                const responseData = await res.json();
+                const audit = responseData.audit || {};
+
+                document.getElementById('audit-result-box').classList.remove('hidden');
+                document.getElementById('audit-grade').innerText = audit.grade || 'B+';
+                document.getElementById('audit-verdict').innerText = audit.trade_verdict || 'Analysis Complete';
+                document.getElementById('audit-quality').innerText = audit.entry_quality || '--';
+                document.getElementById('audit-mistake').innerText = audit.key_mistake || 'None detected.';
+                document.getElementById('audit-good').innerText = audit.what_went_well || '--';
+                document.getElementById('audit-fix').innerText = audit.actionable_fix || '--';
+            } catch (err) {
+                alert('Error running screenshot audit.');
+            } finally {
+                btn.innerText = 'Generate AI Audit Report';
+                btn.disabled = false;
+            }
+        }
+
         window.onload = runAnalysis;
     </script>
 </body>
