@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Market Analyst — XAU/USD</title>
+<style>
+:root{--bg:#0b0e14;--card:#151921;--border:#252b36;--text:#f3f4f6;--muted:#9ca3af;--buy:#10b981;--sell:#ef4444;--wait:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;padding:24px}.wrap{max-width:950px;margin:auto}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.top h1{font-size:22px;margin:0}.live{font-size:12px;color:#34d399}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin:14px 0}.hero{display:flex;justify-content:space-between;align-items:center;gap:20px}.price{font-size:40px;font-weight:800;margin-top:4px}.muted{color:var(--muted)}button{border:0;border-radius:9px;background:#2563eb;color:#fff;padding:11px 18px;font-weight:700;cursor:pointer}button:disabled{opacity:.5}.badge{display:inline-block;padding:8px 15px;border-radius:999px;font-weight:800}.BUY{color:var(--buy);border:1px solid var(--buy);background:#10b98122}.SELL{color:var(--sell);border:1px solid var(--sell);background:#ef444422}.NO_TRADE,.WAIT{color:var(--wait);border:1px solid var(--wait);background:#f59e0b22}.bar{height:13px;background:#2a3241;border-radius:8px;overflow:hidden;display:flex;margin:12px 0}.b{background:var(--buy)}.s{background:var(--sell)}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tf{background:#0f131a;border:1px solid var(--border);border-radius:10px;padding:13px}.tf b{display:block;color:#38bdf8;margin-bottom:6px}.reason{line-height:1.6}.err{color:#f87171}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.hero,.top{flex-direction:column;align-items:flex-start}.price{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><h1>AI Market Analyst</h1><span class="live">● LIVE XAU/USD</span></div><button id="btn" onclick="analyze()">Analyze Live</button></div>
+  <div class="card hero"><div><div class="muted">Current XAU/USD</div><div class="price" id="price">—</div><div class="muted" id="time">Waiting for analysis</div></div><div id="signal" class="badge NO_TRADE">STANDBY</div></div>
+  <div class="card"><h3>AI Decision</h3><div class="bar"><div id="bb" class="b" style="width:50%"></div><div id="sb" class="s" style="width:50%"></div></div><div style="display:flex;justify-content:space-between"><b style="color:var(--buy)">BUY <span id="buy">—</span></b><b style="color:var(--sell)">SELL <span id="sell">—</span></b></div><p>AI Confidence: <b id="conf">—</b> &nbsp; Action: <b id="action">—</b></p></div>
+  <div class="card"><h3>Breakout / Retest Gate</h3><p>Status: <b id="gate">—</b></p><p class="muted" id="gateDetails">—</p></div>
+  <div class="card"><h3>Multi-Timeframe Analysis</h3><div class="grid"><div class="tf"><b>1D</b><span id="d">—</span></div><div class="tf"><b>4H</b><span id="h4">—</span></div><div class="tf"><b>1H</b><span id="h1">—</span></div><div class="tf"><b>15M</b><span id="m15">—</span></div></div></div>
+  <div class="card"><h3>AI Reasoning</h3><p class="reason" id="reason">Press Analyze Live.</p></div>
+  <div class="card"><small class="muted">Data is live market analysis, not a guaranteed prediction. Always verify before trading.</small></div>
+</div>
+<script>
+async function analyze(){
+ const btn=document.getElementById('btn'); btn.disabled=true; btn.textContent='Analyzing...';
+ try{
+  const r=await fetch('/api/analyze',{cache:'no-store'}); const x=await r.json();
+  if(!x.success) throw new Error(x.error||'Analysis failed');
+  const a=x.analysis,m=x.marketData;
+  document.getElementById('price').textContent='$'+Number(m.currentPrice).toFixed(2);
+  document.getElementById('time').textContent='Latest 15M candle: '+new Date(m.latestCandle).toLocaleString();
+  const cls=a.signal==='BUY'?'BUY':a.signal==='SELL'?'SELL':'NO_TRADE';
+  const sig=document.getElementById('signal'); sig.className='badge '+cls; sig.textContent=a.signal;
+  document.getElementById('buy').textContent=a.buyProbability+'%'; document.getElementById('sell').textContent=a.sellProbability+'%';
+  document.getElementById('bb').style.width=a.buyProbability+'%'; document.getElementById('sb').style.width=a.sellProbability+'%';
+  document.getElementById('conf').textContent=a.aiConfidence+'%'; document.getElementById('action').textContent=a.action;
+  document.getElementById('gate').textContent=a.breakoutRetestGate.status; document.getElementById('gateDetails').textContent=a.breakoutRetestGate.details;
+  document.getElementById('d').textContent=a.timeframeAnalysis['1D']; document.getElementById('h4').textContent=a.timeframeAnalysis['4H']; document.getElementById('h1').textContent=a.timeframeAnalysis['1H']; document.getElementById('m15').textContent=a.timeframeAnalysis['15M'];
+  document.getElementById('reason').textContent=a.aiReasoning;
+ }catch(e){document.getElementById('reason').innerHTML='<span class="err">Error: '+e.message+'</span>';}
+ finally{btn.disabled=false;btn.textContent='Analyze Live';}
+}
+</script>
+</body>
+</html>
