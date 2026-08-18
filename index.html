@@ -1,102 +1,205 @@
-TradeFX Terminal | Institutional AI Analysis
-  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeFX Terminal | Institutional AI Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #0b0e14; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+    .card-bg { background-color: #121824; border: 1px solid #1e2638; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
 
+  <!-- Sidebar -->
+  <aside class="w-full md:w-64 card-bg p-5 flex flex-col shrink-0 border-b md:border-b-0 md:border-r border-slate-800">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">TF</div>
+      <div>
+        <h2 class="font-bold text-lg leading-tight">TradeFX</h2>
+        <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">ELITE SYSTEM</span>
+      </div>
+    </div>
+    <nav class="space-y-2">
+      <button id="nav-dash" class="w-full text-left px-4 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 font-semibold flex items-center gap-3" onclick="switchTab('dashboard')">
+        <i class="fa-solid fa-chart-line"></i> Dashboard
+      </button>
+      <button id="nav-audit" class="w-full text-left px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800/50 font-semibold flex items-center gap-3" onclick="switchTab('audit')">
+        <i class="fa-solid fa-camera"></i> AI Trade Audit
+      </button>
+      <button id="nav-cal" class="w-full text-left px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800/50 font-semibold flex items-center gap-3" onclick="switchTab('calendar')">
+        <i class="fa-solid fa-calendar-days"></i> Calendar (PKT)
+      </button>
+    </nav>
+  </aside>
 
+  <!-- Main Content Area -->
+  <main class="flex-1 p-6 overflow-y-auto">
+    <!-- Header -->
+    <header class="flex flex-wrap justify-between items-center pb-4 mb-6 border-b border-slate-800 gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">ACTIVE PAIR:</span>
+        <div class="bg-slate-900 p-1 rounded-lg border border-slate-800 flex gap-1">
+          <button id="btn-XAUUSD" class="px-3 py-1 rounded font-bold text-xs bg-blue-600 text-white" onclick="selectPair('XAUUSD')">XAUUSD</button>
+          <button id="btn-EURUSD" class="px-3 py-1 rounded font-bold text-xs text-slate-400 hover:text-white" onclick="selectPair('EURUSD')">EURUSD</button>
+          <button id="btn-NASDAQ" class="px-3 py-1 rounded font-bold text-xs text-slate-400 hover:text-white" onclick="selectPair('NASDAQ')">NASDAQ</button>
+          <button id="btn-US30" class="px-3 py-1 rounded font-bold text-xs text-slate-400 hover:text-white" onclick="selectPair('US30')">US30</button>
+        </div>
+      </div>
+      <button class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2" onclick="fetchLivePairData()">
+        <i class="fa-solid fa-arrows-rotate"></i> Refresh Feed
+      </button>
+    </header>
 
-  
-    
-      TF
-      
-        TradeFX
-        ELITE
-      
-    
-    
-      📊 Dashboard
-      📷 AI Trade Audit
-      📅 Economic Calendar
-    
-  
+    <!-- Dashboard View -->
+    <div id="tab-dashboard-view" class="space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="card-bg p-5 rounded-xl">
+          <div class="text-xs font-semibold text-slate-400 uppercase">LIVE PRICE (<span id="ui-pair">XAUUSD</span>)</div>
+          <div id="ui-price" class="text-3xl font-black mt-2 text-white">2504.50</div>
+          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Real-time Feed</div>
+        </div>
+        <div class="card-bg p-5 rounded-xl">
+          <div class="text-xs font-semibold text-slate-400 uppercase">INSTITUTIONAL BIAS</div>
+          <div id="ui-bias" class="text-3xl font-black mt-2 text-emerald-400">BULLISH</div>
+          <div id="ui-confidence" class="text-xs text-slate-400 mt-1">Confidence: 88%</div>
+        </div>
+        <div class="card-bg p-5 rounded-xl">
+          <div class="text-xs font-semibold text-slate-400 uppercase">ENTRY GATE STATUS</div>
+          <div id="ui-gate" class="text-3xl font-black mt-2 text-amber-400">READY</div>
+          <div class="text-xs text-slate-400 mt-1">Awaiting Confluence</div>
+        </div>
+        <div class="card-bg p-5 rounded-xl">
+          <div class="text-xs font-semibold text-slate-400 uppercase">RSI MOMENTUM</div>
+          <div id="ui-rsi" class="text-3xl font-black mt-2 text-blue-400">61.4</div>
+          <div class="text-xs text-slate-400 mt-1">1H Timeframe</div>
+        </div>
+      </div>
 
-  
-    
-      
-        ACTIVE PAIR:
-        
-          XAUUSD
-          EURUSD
-          NASDAQ
-          US30
-        
-      
-      🔄 Refresh
-    
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card-bg p-5 rounded-xl">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Timeframe Alignment Matrix</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1"><span>1D Daily Structure</span><span id="d1-val" class="text-emerald-400">82%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="d1-bar" class="bg-emerald-500 h-full" style="width: 82%;"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1"><span>4H Intermediate Trend</span><span id="h4-val" class="text-emerald-400">75%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="h4-bar" class="bg-emerald-500 h-full" style="width: 75%;"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1"><span>1H Local Execution</span><span id="h1-val" class="text-amber-400">64%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="h1-bar" class="bg-amber-400 h-full" style="width: 64%;"></div></div>
+            </div>
+          </div>
+        </div>
 
-    
-      
-        
-          LIVE PRICE (XAUUSD)
-          2504.50
-          ● Real-time Feed
-        
-        
-          INSTITUTIONAL BIAS
-          BULLISH
-          Confidence: 88%
-        
-        
-          ENTRY GATE STATUS
-          READY
-          Awaiting Confluence
-        
-        
-          RSI MOMENTUM
-          61.4
-          1H Timeframe
-        
-      
+        <div class="card-bg p-5 rounded-xl">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Gemini Technical Reasoning</h3>
+          <div id="ui-reasoning" class="bg-slate-900/80 border border-slate-800 p-4 rounded-lg text-sm text-slate-300 leading-relaxed">
+            Price action holds clean structural alignment above Asia Session Lows. H4 liquidity sweep confirmed with strong institutional buying volume entering FVG zone.
+          </div>
+        </div>
+      </div>
+    </div>
 
-      
-        
-          Timeframe Alignment Matrix
-          
-            1D Daily Structure82%
-            
-          
-          
-            4H Intermediate Trend75%
-            
-          
-          
-            1H Local Execution64%
-            
-          
-        
+    <!-- Audit View -->
+    <div id="tab-audit-view" class="hidden">
+      <div class="card-bg p-6 rounded-xl max-w-2xl">
+        <h2 class="text-xl font-bold mb-1">AI Trade Setup Audit</h2>
+        <p class="text-xs text-slate-400 mb-6">Upload chart screenshot for instant market structure & liquidity sweep analysis.</p>
+        <div class="border-2 border-dashed border-slate-700 p-8 rounded-xl text-center cursor-pointer hover:border-blue-500 transition" onclick="document.getElementById('chart-input').click()">
+          <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-500 mb-2"></i>
+          <p class="font-bold text-sm">Click to upload Chart Screenshot</p>
+          <p class="text-xs text-slate-500 mt-1">Supports PNG, JPG, WEBP</p>
+          <input type="file" id="chart-input" accept="image/*" class="hidden" onchange="handleChartUpload(event)" />
+        </div>
+        <div id="audit-result" class="hidden mt-6 p-4 bg-slate-900 rounded-lg border border-slate-800 text-emerald-400 text-sm">
+          <div class="font-bold mb-1 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> Audit Scan Complete:</div>
+          <p id="audit-msg" class="text-slate-300 mt-1"></p>
+        </div>
+      </div>
+    </div>
 
-        
-          Gemini Technical Reasoning
-          Price action holds clean structural alignment above Asia Session Lows. H4 liquidity sweep confirmed with strong institutional buying volume entering FVG zone.
-        
-      
-    
+    <!-- Calendar View -->
+    <div id="tab-calendar-view" class="hidden">
+      <div class="card-bg p-6 rounded-xl">
+        <h2 class="text-xl font-bold mb-4">Economic News Calendar (PKT)</h2>
+        <div class="p-4 bg-slate-900 rounded-lg border border-slate-800 text-slate-200">
+          <p class="font-bold text-amber-400">CPI Inflation Data (18:30 PKT)</p>
+          <p class="text-xs text-slate-400 mt-1">High Impact USD Event - Be cautious around session volatility.</p>
+        </div>
+      </div>
+    </div>
+  </main>
 
-    
-      
-        AI Trade Setup Audit
-        Upload chart screenshot for instant market structure & liquidity sweep analysis.
-        
-          📷 Click to upload Chart Screenshot
-          Supports PNG, JPG, WEBP
-          
-        
-        
-          ✓ Audit Scan Complete:
-          
-        
-      
-    
+  <script>
+    let activeSymbol = "XAUUSD";
+    const MOCK_DATA = {
+      XAUUSD: { price: "2504.50", bias: "BULLISH", conf: "88%", gate: "VALIDATED", rsi: "61.4", d1: 85, h4: 78, h1: 68, text: "XAUUSD structural breakout confirmed above key Asia high liquidity level. FVG retest holds bullish structure." },
+      EURUSD: { price: "1.0892", bias: "BEARISH", conf: "74%", gate: "WAITING", rsi: "42.1", d1: 45, h4: 38, h1: 52, text: "EURUSD experiencing rejection at 4H supply zone. Looking for confirmation sweep below London lows." },
+      NASDAQ: { price: "19780.20", bias: "BULLISH", conf: "91%", gate: "VALIDATED", rsi: "66.8", d1: 90, h4: 84, h1: 75, text: "NASDAQ maintaining strong institutional momentum after high volume session opening range expansion." },
+      US30: { price: "40850.00", bias: "BULLISH", conf: "81%", gate: "READY", rsi: "57.3", d1: 78, h4: 70, h1: 62, text: "US30 consolidating in tight premium zone. Retest of 1H demand level expected before continuation." }
+    };
 
-    
-      
-        Economic News Calendar (PKT)
-        CPI Inflation Data (18:30 PKT) | High Impact USD Event
+    function fetchLivePairData() {
+      const m = MOCK_DATA[activeSymbol];
+      document.getElementById('ui-pair').innerText = activeSymbol;
+      document.getElementById('ui-price').innerText = m.price;
+      const bias = document.getElementById('ui-bias');
+      bias.innerText = m.bias;
+      bias.className = `text-3xl font-black mt-2 ${m.bias === 'BULLISH' ? 'text-emerald-400' : 'text-rose-500'}`;
+      document.getElementById('ui-confidence').innerText = `Confidence: ${m.conf}`;
+      document.getElementById('ui-gate').innerText = m.gate;
+      document.getElementById('ui-rsi').innerText = m.rsi;
+      document.getElementById('d1-val').innerText = `${m.d1}%`;
+      document.getElementById('d1-bar').style.width = `${m.d1}%`;
+      document.getElementById('h4-val').innerText = `${m.h4}%`;
+      document.getElementById('h4-bar').style.width = `${m.h4}%`;
+      document.getElementById('h1-val').innerText = `${m.h1}%`;
+      document.getElementById('h1-bar').style.width = `${m.h1}%`;
+      document.getElementById('ui-reasoning').innerText = m.text;
+    }
+
+    function selectPair(symbol) {
+      activeSymbol = symbol;
+      document.querySelectorAll('header button[id^="btn-"]').forEach(b => {
+        b.className = "px-3 py-1 rounded font-bold text-xs text-slate-400 hover:text-white";
+      });
+      document.getElementById(`btn-${symbol}`).className = "px-3 py-1 rounded font-bold text-xs bg-blue-600 text-white";
+      fetchLivePairData();
+    }
+
+    function switchTab(tab) {
+      ['dash', 'audit', 'cal'].forEach(t => {
+        const nav = document.getElementById(`nav-${t}`);
+        nav.className = "w-full text-left px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800/50 font-semibold flex items-center gap-3";
+      });
+      ['dashboard', 'audit', 'calendar'].forEach(t => {
+        document.getElementById(`tab-${t}-view`).classList.add('hidden');
+      });
+
+      if (tab === 'dashboard') {
+        document.getElementById('tab-dashboard-view').classList.remove('hidden');
+        document.getElementById('nav-dash').className = "w-full text-left px-4 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 font-semibold flex items-center gap-3";
+      } else if (tab === 'audit') {
+        document.getElementById('tab-audit-view').classList.remove('hidden');
+        document.getElementById('nav-audit').className = "w-full text-left px-4 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 font-semibold flex items-center gap-3";
+      } else if (tab === 'calendar') {
+        document.getElementById('tab-calendar-view').classList.remove('hidden');
+        document.getElementById('nav-cal').className = "w-full text-left px-4 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 font-semibold flex items-center gap-3";
+      }
+    }
+
+    function handleChartUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      document.getElementById('audit-result').classList.remove('hidden');
+      document.getElementById('audit-msg').innerText = `Analyzing "${file.name}"... Institutional Liquidity Sweep detected. Valid Fair Value Gap (FVG) confluence present.`;
+    }
+  </script>
+</body>
+</html>
