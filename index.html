@@ -1,55 +1,105 @@
-<!-- AI Live News & Sentiment Engine Widget -->
-<div id="ai-news-container" style="background: #131722; color: #d1d4dc; padding: 20px; border-radius: 8px; border: 1px solid #2a2e39; margin-top: 20px; font-family: sans-serif;">
-  <h3 style="border-bottom: 1px solid #2a2e39; padding-bottom: 10px; color: #2962ff; margin-top: 0;">
-    🤖 AI Live News & Sentiment Engine
-  </h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XAUUSD AI Market Analyst</title>
+  <style>
+    body {
+      background-color: #0b0e14;
+      color: #d1d4dc;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #131722;
+      border: 1px solid #2a2e39;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    h1, h2, h3, h4 { margin-top: 0; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      background: #1e222d;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #2a2e39;
+    }
+    .stat-title { font-size: 12px; color: #787b86; text-transform: uppercase; }
+    .stat-value { font-size: 22px; font-weight: bold; margin-top: 5px; }
+    .bullish { color: #089981; }
+    .bearish { color: #f23645; }
+    .neutral { color: #f7a600; }
+  </style>
+</head>
+<body>
 
-  <div style="display: flex; align-items: center; justify-content: space-between; background: #1e222d; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-    <div>
-      <span style="font-size: 12px; color: #787b86;">AI Market Recommendation</span>
-      <h2 id="ai-decision-text" style="margin: 5px 0 0 0; color: #089981;">BUY / BULLISH BIAS</h2>
-    </div>
-    <div style="text-align: right;">
-      <span style="font-size: 12px; color: #787b86;">Confidence</span>
-      <h3 id="ai-confidence-text" style="margin: 5px 0 0 0; color: #2962ff;">88%</h3>
+<div class="container">
+  
+  <!-- MAIN DASHBOARD HEADER -->
+  <div class="card">
+    <h2 style="color: #2962ff;">⚡ XAUUSD Institutional Market Analyst</h2>
+    <div class="grid">
+      <div class="stat-box">
+        <div class="stat-title">Current Price</div>
+        <div id="live-price" class="stat-value">Loading...</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">4H Market Bias</div>
+        <div id="market-bias" class="stat-value neutral">CALCULATING...</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">RSI (14) Status</div>
+        <div id="rsi-val" class="stat-value">--</div>
+      </div>
     </div>
   </div>
 
-  <p id="ai-reasoning-text" style="font-size: 13px; color: #b2b5be; font-style: italic; margin-bottom: 20px;">
-    <strong>Reasoning:</strong> Softening USD yields and dovish economic expectations aligning with bullish Gold market structure.
-  </p>
+  <!-- AI NEWS & SENTIMENT ENGINE -->
+  <div class="card">
+    <h3 style="border-bottom: 1px solid #2a2e39; padding-bottom: 10px; color: #2962ff;">
+      🤖 AI Live News & Sentiment Engine
+    </h3>
 
-  <h4 style="font-size: 14px; margin-bottom: 10px; color: #787b86;">Live Headlines Stream</h4>
-  <ul id="news-headlines-list" style="list-style: none; padding: 0; margin: 0; font-size: 13px;">
-    <li style="padding: 8px 0; border-bottom: 1px solid #1e222d;">📰 US Dollar slides as market digests inflation indicators and Fed projections</li>
-    <li style="padding: 8px 0; border-bottom: 1px solid #1e222d;">📰 Gold holds structure near key support ahead of high-impact US economic data</li>
-    <li style="padding: 8px 0; border-bottom: 1px solid #1e222d;">📰 Central Bank reserve demand continues supporting Gold price action</li>
-    <li style="padding: 8px 0; border-bottom: 1px solid #1e222d;">📰 Treasury yields pull back slightly, offering support to non-yielding metals</li>
-  </ul>
+    <div style="display: flex; align-items: center; justify-content: space-between; background: #1e222d; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+      <div>
+        <span style="font-size: 12px; color: #787b86;">AI Overall Market Bias</span>
+        <h2 id="ai-decision-text" class="bullish" style="margin: 5px 0 0 0;">BUY / BULLISH BIAS</h2>
+      </div>
+      <div style="text-align: right;">
+        <span style="font-size: 12px; color: #787b86;">Confidence</span>
+        <h3 id="ai-confidence-text" style="margin: 5px 0 0 0; color: #2962ff;">88%</h3>
+      </div>
+    </div>
+
+    <p id="ai-reasoning-text" style="font-size: 13px; color: #b2b5be; font-style: italic; margin-bottom: 20px;">
+      <strong>Reasoning:</strong> Softening USD yields and dovish economic expectations aligning with bullish Gold market structure.
+    </p>
+
+    <h4 style="font-size: 14px; margin-bottom: 10px; color: #787b86;">Live Headlines Stream</h4>
+    <ul id="news-headlines-list" style="list-style: none; padding: 0; margin: 0; font-size: 13px;">
+      <li style="padding: 8px 0; border-bottom: 1px solid #1e222d;">📰 US Dollar slides as market digests inflation indicators and Fed projections</li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #1e222d;">📰 Gold holds structure near key support ahead of high-impact US economic data</li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #1e222d;">📰 Central Bank reserve demand continues supporting Gold price action</li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #1e222d;">📰 Treasury yields pull back slightly, offering support to non-yielding metals</li>
+    </ul>
+  </div>
+
 </div>
 
-<script>
-  (function initAiNewsWidget() {
-    function renderAiData() {
-      const decision = document.getElementById('ai-decision-text');
-      const confidence = document.getElementById('ai-confidence-text');
-      const reason = document.getElementById('ai-reasoning-text');
+<!-- APPLICATION SCRIPTS -->
+<script src="audit.js" defer></script>
 
-      if (decision) {
-        decision.innerText = "BUY / BULLISH BIAS";
-        decision.style.color = "#089981";
-      }
-      if (confidence) confidence.innerText = "88%";
-      if (reason) {
-        reason.innerHTML = "<strong>Reasoning:</strong> Softening USD yields and dovish economic expectations aligning with bullish Gold market structure.";
-      }
-    }
-    
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      renderAiData();
-    } else {
-      document.addEventListener('DOMContentLoaded', renderAiData);
-    }
-    setTimeout(renderAiData, 500);
-  })();
-</script>
+</body>
+</html>
